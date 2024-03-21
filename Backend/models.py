@@ -16,3 +16,10 @@ class Book(db.Model):
     author = db.Column(db.String, nullable=False)
     date_issued = db.Column(db.Date)
     return_date = db.Column(db.Date)
+
+
+class Section(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    description = db.Column(db.String)
+    date_created = db.Column(db.Date)
