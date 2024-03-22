@@ -1,15 +1,19 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div>
+    <h2>Ebook Viewer</h2>
+    <object data="../assets/demo.pdf" type="application/pdf" width="100%" height="800px">
+      <p>Your browser doesn't support the &lt;object&gt; element.</p>
+    </object>
   </div>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
+<script>
+export default {
+  name: 'EbookViewer',
+  data() {
+    return {
+      fileUrl: '@/assets/demo.pdf'
+    }
   }
 }
-</style>
+</script>
