@@ -1,12 +1,14 @@
+<script setup>
+import pdfjsLib from 'pdfjs-dist';
+</script>
+
 <template>
   <div>
-    <h2>{{ ebook.title }}</h2>
     <canvas ref="pdfCanvas"></canvas>
   </div>
 </template>
 
 <script>
-import pdfjsLib from 'pdfjs-dist';
 
 export default {
   data() {
@@ -21,9 +23,12 @@ export default {
       ctx: null
     };
   },
+  mounted() {
+    this.renderPDF();
+  },
   methods: {
     renderPDF() {
-      let pdfPath = `/assets/demo.pdf`;
+      let pdfPath = `../assets/demo.pdf`;
       pdfjsLib.getDocument(pdfPath).promise
         .then(pdfDoc_ => {
           this.pdfDoc = pdfDoc_;
@@ -57,18 +62,20 @@ export default {
         console.error('Error rendering page:', error);
       });
 
+      // Remove the previous event listener before adding a new one
+      this.$refs.pdfCanvas.removeEventListener('click', this.onCanvasClick);
       this.$nextTick(() => {
         this.$refs.pdfCanvas.addEventListener('click', this.onCanvasClick);
       });
     },
     onCanvasClick(event) {
-      if (this.pageRendering) {
-        this.pageNumPending = this.pageNum;
-      } else {
-        this.pageNum++;
-        if (this.pageNum <= this.pdfDoc.numPages) {
+      if (!this.pageRendering) {
+        if (this.pageNum < this.pdfDoc.numPages) {
+          this.pageNum++;
           this.renderPage(this.pageNum);
         }
+      } else {
+        this.pageNumPending = this.pageNum;
       }
     }
   }
