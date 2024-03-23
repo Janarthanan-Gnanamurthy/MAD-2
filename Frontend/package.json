@@ -10,9 +10,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
-    "pdfjs-dist": "^4.0.379",
     "vue": "^3.4.21",
-    "vue-pdf-embed": "^2.0.3",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
