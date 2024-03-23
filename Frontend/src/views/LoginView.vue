@@ -1,5 +1,5 @@
 <template>
-	<main class="">
+	<main class="d-flex justify-content-center align-items-center p-5">
 		<div class="card border-0 rounded-lg bgc-2 shadow p-4" style="width: 450px">
 			<h1 class="text-center mt-1 t4 mb-4">User Login</h1>
 			<form action="/login" method="post">
