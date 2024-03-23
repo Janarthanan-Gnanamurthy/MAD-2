@@ -1,0 +1,38 @@
+<template>
+	<main class="">
+		<div class="card border-0 rounded-lg bgc-2 shadow p-4" style="width: 450px">
+			<h1 class="text-center mt-1 t4 mb-4">User Login</h1>
+			<form action="/login" method="post">
+				<div class="form-group mb-3">
+					<h5 for="number" class="from-label text-white t4">Username:</h5>
+					<input
+						type="text"
+						name="name"
+						class="nm form-control rounded w-100"
+						id="number"
+						placeholder="Enter Username"
+						required
+					/>
+				</div>
+				<div class="form-group mb-3">
+					<h5 for="password" class="form-label text-white t4">Password:</h5>
+					<input
+						type="password"
+						name="password"
+						class="nm form-control rounded w-100"
+						id="password"
+						placeholder="Enter password"
+						required
+					/>
+				</div>
+				<button type="submit" class="btn btn-primary rounded w-100 mt-3">
+					Sign In
+				</button>
+				<p class="mt-3 text-center">
+					New to ECHO?
+					<a href="/user/create">Sign up</a>
+				</p>
+			</form>
+		</div>
+	</main>
+</template>
