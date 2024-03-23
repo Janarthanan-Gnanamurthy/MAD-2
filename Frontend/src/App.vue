@@ -6,7 +6,7 @@ import { RouterLink, RouterView } from 'vue-router'
   <main>
     <nav class="navbar bg-primary ">
       <RouterLink to="/" class="text-black">Home</RouterLink>
-      <RouterLink to="/about" class="text-black">About</RouterLink>
+      <RouterLink to="/about" class="btn btn-secondary">About</RouterLink>
     </nav>
 
     <RouterView />
