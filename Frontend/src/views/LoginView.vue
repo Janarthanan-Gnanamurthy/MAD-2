@@ -30,9 +30,10 @@
 				</button>
 				<p class="mt-3 text-center">
 					New to ECHO?
-					<a href="/user/create">Sign up</a>
+					<a href="/Register">Sign up</a>
 				</p>
 			</form>
 		</div>
 	</main>
 </template>
+
