@@ -47,7 +47,7 @@
 					/>
 				</div>
 
-				<button type="submit" class="btn btn-primary align-self-center">
+				<button @click="createUser" class="btn btn-primary align-self-center">
 					Register
 				</button>
 			</div>
@@ -62,12 +62,31 @@ export default {
 			name: '',
 			email: '',
 			number: '',
-			passworda: ''
+			password: ''
 		}
 	},
 	methods: {
-		createUser(){
-			return -1
+		async createUser(){
+			const FormData = {username: this.name, email: this.email, number: this.number, password: this.password}
+			try {
+				const response = await fetch(`http://localhost:5000/users`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(FormData)
+				});
+
+				if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+
+				const data = await response.json();
+				console.log('success', data);
+			} catch (error) {
+				console.error('Error fetching courses:', error);
+				alert('Error fetching courses. Please try again.');
+			}
 		}
 	}
 }
