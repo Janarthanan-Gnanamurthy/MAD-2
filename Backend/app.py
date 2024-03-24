@@ -1,12 +1,14 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 from models import db, User, Book, Section
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 api = Api(app)
-
+CORS(app, origins=['http://localhost:5173/*'])
 
 db.init_app(app)
 
@@ -29,13 +31,12 @@ class UserResource(Resource):
     # The rest of the CRUD operations remain unchanged...
 
     def post(self):
-        data = {'username': request.form.get(
-            'username'), 'email': request.form.get('email')}
+        data = request.json
         print(data)
-        user = User(**data)
-        db.session.add(user)
-        db.session.commit()
-        return {'message': 'User created successfully'}, 201
+        # user = User(**data)
+        # db.session.add(user)
+        # db.session.commit()
+        return {'message': 'data'}, 201
 
     def put(self, user_id):
         user = User.query.get_or_404(user_id)
