@@ -33,10 +33,10 @@ class UserResource(Resource):
     def post(self):
         data = request.json
         print(data)
-        # user = User(**data)
-        # db.session.add(user)
-        # db.session.commit()
-        return {'message': 'data'}, 201
+        user = User(**data)
+        db.session.add(user)
+        db.session.commit()
+        return {'message': 'created User successfully'}, 201
 
     def put(self, user_id):
         user = User.query.get_or_404(user_id)
