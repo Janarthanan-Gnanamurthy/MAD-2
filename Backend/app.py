@@ -1,6 +1,7 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse
 from models import db, User, Book, Section
+from datetime import datetime
 from flask_cors import CORS
 
 
@@ -31,18 +32,7 @@ class UserResource(Resource):
     # The rest of the CRUD operations remain unchanged...
 
     def post(self):
-        data = request.json
-        print(data)
-        user = User(**data)
-        db.session.add(user)
-        db.session.commit()
-        return {'message': 'created User successfully'}, 201
-
-    def put(self, user_id):
-        user = User.query.get_or_404(user_id)
         data = request.get_json()
-        user.username = data['username']
-        user.email = data['email']
         db.session.commit()
         return {'message': 'User updated successfully'}
 
@@ -53,11 +43,34 @@ class UserResource(Resource):
         return {'message': 'User deleted successfully'}
 
 
+# Section resource
+class SectionResource(Resource):
+    def get(self, section_id=None):
+        if section_id:
+            section = Section.query.get(section_id)
+            if section:
+                return str(section.__dict__), 200
+            else:
+                return {"message": "Section not found"}, 404
+        else:
+            sections = Section.query.all()
+            return [{'name': section.name, 'description': section.description, 'date_created': f'{section.date_created}'} for section in sections], 200
+
+    def post(self):
+        data = request.json
+        new_section = Section(
+            name=data['name'], description=data['description'], date_created=datetime.now())
+        db.session.add(new_section)
+        db.session.commit()
+        return {"message": "Section created successfully"}, 201
+
+
 def get_users():
     return User.query.all()
 
 
 api.add_resource(UserResource, '/users', '/users/<int:user_id>')
+api.add_resource(SectionResource, '/sections', '/sections/<int:section_id>')
 
 if __name__ == '__main__':
     app.run(debug=True)
