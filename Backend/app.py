@@ -17,6 +17,21 @@ with app.app_context():
     db.create_all()
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        response = request.json
+        print(response)
+        user = User.query.filter_by(username=response['username']).first()
+        if user and response['password'] == user.password:
+            return {'id': user.id, 'username': user.username, 'email': user.email}
+        else:
+            return {'message': 'Wrong Username or Password'}
+
+    else:
+        return {'message': 'this is login page'}
+
+
 # Resources for CRUD operations
 class UserResource(Resource):
     def get(self, user_id=None):
@@ -26,13 +41,15 @@ class UserResource(Resource):
         else:
             users = User.query.all()
             serialized_users = [
-                {'id': user.id, 'username': user.username, 'email': user.email} for user in users]
+                {'id': user.id, 'username': user.username, 'email': user.email, 'password': user.password} for user in users]
             return serialized_users
 
     # The rest of the CRUD operations remain unchanged...
 
     def post(self):
         data = request.get_json()
+        new_user = User(**data)
+        db.session.add(new_user)
         db.session.commit()
         return {'message': 'User updated successfully'}
 

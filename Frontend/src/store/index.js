@@ -5,7 +5,9 @@ export default createStore({
     user: {'jana': 'AI-DS'},
   },
   mutations: {
-
+    updateUser(state, user){
+        state.user = user
+    }
   },
   actions: {
 
