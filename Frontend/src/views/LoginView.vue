@@ -48,24 +48,10 @@ export default {
 		async login(){
 			const FormData = {username: this.name, password: this.password}
 			try {
-				const response = await fetch(`http://localhost:5000/login`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(FormData)
-				});
-
-				if (!response.ok) {
-						throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-
-				const data = await response.json();
-				this.$store.commit('updateUser', data)
-				console.log('success', data);
+				await this.$store.dispatch('login', FormData);
+				this.$router.push('/');
 			} catch (error) {
-				console.error('Error fetching User:', error);
-				alert('Error fetching User. Please try again.');
+				console.error('Login Error:', error.message);
 			}
 		}
 	}
