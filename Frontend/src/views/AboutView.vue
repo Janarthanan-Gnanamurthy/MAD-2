@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas ref="pdfCanvas"></canvas>
+    this is about page
   </div>
 </template>
 
