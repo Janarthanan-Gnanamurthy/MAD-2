@@ -31,6 +31,7 @@ export default createStore({
         });
 
         if (!response.ok) {
+          alert('Login Failed')
           throw new Error('Login failed');
         }
 

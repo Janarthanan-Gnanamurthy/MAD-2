@@ -31,7 +31,7 @@ def login():
             access_token = create_access_token(identity=user.username)
             return {'access_token': access_token}, 200
         else:
-            return {'message': 'Wrong Username or Password'}
+            return {'message': 'Wrong Username or Password'}, 404
 
     else:
         return {'message': 'this is login page'}
