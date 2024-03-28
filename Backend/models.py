@@ -9,7 +9,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     number = db.Column(db.Integer, unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
-    role = db.Column(db.String(50), nullable=False, default='normal user')
+    role = db.Column(db.String(50), nullable=False, default='User')
+
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
