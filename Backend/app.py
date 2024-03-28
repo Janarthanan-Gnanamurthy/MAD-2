@@ -1,17 +1,22 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse
 from models import db, User, Book, Section
-from datetime import datetime
+from datetime import datetime, timedelta
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'super-secret'
+app.config['JWT_SECRET_KEY'] = 'jwt-secret'
+
 api = Api(app)
 CORS(app, origins=['http://localhost:5173/*'])
 
 db.init_app(app)
+jwt = JWTManager(app)
 
 with app.app_context():
     db.create_all()
@@ -21,10 +26,10 @@ with app.app_context():
 def login():
     if request.method == "POST":
         response = request.json
-        print(response)
         user = User.query.filter_by(username=response['username']).first()
         if user and response['password'] == user.password:
-            return {'id': user.id, 'username': user.username, 'email': user.email}
+            access_token = create_access_token(identity=user.username)
+            return {'access_token': access_token}, 200
         else:
             return {'message': 'Wrong Username or Password'}
 
@@ -32,7 +37,6 @@ def login():
         return {'message': 'this is login page'}
 
 
-# Resources for CRUD operations
 class UserResource(Resource):
     def get(self, user_id=None):
         if user_id:
@@ -43,8 +47,6 @@ class UserResource(Resource):
             serialized_users = [
                 {'id': user.id, 'username': user.username, 'email': user.email, 'password': user.password} for user in users]
             return serialized_users
-
-    # The rest of the CRUD operations remain unchanged...
 
     def post(self):
         data = request.get_json()
@@ -60,7 +62,6 @@ class UserResource(Resource):
         return {'message': 'User deleted successfully'}
 
 
-# Section resource
 class SectionResource(Resource):
     def get(self, section_id=None):
         if section_id:
@@ -80,10 +81,6 @@ class SectionResource(Resource):
         db.session.add(new_section)
         db.session.commit()
         return {"message": "Section created successfully"}, 201
-
-
-def get_users():
-    return User.query.all()
 
 
 api.add_resource(UserResource, '/users', '/users/<int:user_id>')
