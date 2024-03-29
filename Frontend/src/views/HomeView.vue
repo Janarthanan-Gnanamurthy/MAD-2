@@ -1,7 +1,87 @@
 <template>
-  <main>
-    <div>This is Home page
-      {{ $store.state.token }}
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">eBook Web App</h1>
+    
+    <div class="row">
+      <!-- Section List -->
+      <div class="col-md-4">
+        <h3>Sections</h3>
+        <ul class="list-group">
+          <li 
+            v-for="section in sections" 
+            :key="section.id" 
+            class="list-group-item d-flex justify-content-between align-items-center"
+            @click="selectedSection = section"
+            :class="{ 'active': selectedSection && selectedSection.id === section.id }"
+          >
+            {{ section.name }}
+            <span class="badge badge-primary badge-pill">{{ section.books.length }}</span>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Book List -->
+      <div class="col-md-8">
+        <h3 v-if="selectedSection">Books in {{ selectedSection.name }}</h3>
+        
+        <ul v-if="selectedSection" class="list-group">
+          <li 
+            v-for="book in selectedSection.books" 
+            :key="book.id" 
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
+            {{ book.name }}
+            <span v-if="!isBookBorrowed(book.id)" class="badge badge-success badge-pill" @click="borrowBook(book)">Borrow</span>
+            <span v-else class="badge badge-danger badge-pill" @click="returnBook(book)">Return</span>
+          </li>
+        </ul>
+      </div>
     </div>
-  </main>
+  </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      sections: [],
+      selectedSection: null,
+      borrowedBooks: []  // List of borrowed book ids
+    };
+  },
+  mounted() {
+    // Fetch sections and books data from the backend
+    fetch("http://localhost:5000/sections")
+      .then(response => response.json())
+      .then(data => {
+        this.sections = data;
+      });
+  },
+  methods: {
+    isBookBorrowed(bookId) {
+      return this.borrowedBooks.includes(bookId);
+    },
+    borrowBook(book) {
+      // Simulate borrowing a book (you can replace this with an actual API call)
+      this.borrowedBooks.push(book.id);
+      alert(`You have borrowed the book: ${book.name}`);
+    },
+    returnBook(book) {
+      // Simulate returning a book (you can replace this with an actual API call)
+      const index = this.borrowedBooks.indexOf(book.id);
+      if (index > -1) {
+        this.borrowedBooks.splice(index, 1);
+      }
+      alert(`You have returned the book: ${book.name}`);
+    }
+  }
+};
+</script>
+
+<style>
+/* Add custom styles here */
+.active {
+  background-color: #007bff;
+  color: white;
+}
+</style>

@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_restful import Api
-from api import UserResource, SectionResource
+from api import UserResource, SectionResource, BookResource
 
 from models import db, User, Book, Section
-from datetime import datetime, timedelta
+
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
 
@@ -30,7 +30,8 @@ def login():
         response = request.json
         user = User.query.filter_by(username=response['username']).first()
         if user and response['password'] == user.password:
-            access_token = create_access_token(identity=user.username)
+            access_token = create_access_token(
+                identity={'id': user.id, 'username': user.username, 'email': user.email})
             return {'access_token': access_token}, 200
         else:
             return {'message': 'Wrong Username or Password'}, 404
@@ -39,8 +40,15 @@ def login():
         return {'message': 'this is login page'}
 
 
+@app.route('/useridentity', methods=["GET"])
+@jwt_required()
+def userid():
+    return get_jwt_identity()
+
+
 api.add_resource(UserResource, '/users', '/users/<int:user_id>')
 api.add_resource(SectionResource, '/sections', '/sections/<int:section_id>')
+api.add_resource(BookResource, '/books', '/books/<int:book_id>')
 
 if __name__ == '__main__':
     app.run(debug=True)
