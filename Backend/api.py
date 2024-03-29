@@ -1,8 +1,13 @@
 from flask import request
 from flask_restful import Resource, Api, reqparse
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime, timedelta
+
 from models import db, User, Book, Section
 
+
 class UserResource(Resource):
+    @jwt_required()
     def get(self, user_id=None):
         if user_id:
             user = User.query.get_or_404(user_id)
