@@ -29,3 +29,4 @@ class Section(db.Model):
     description = db.Column(db.String)
     date_created = db.Column(db.Date)
     books = db.relationship('Book', backref='section', lazy=True)
+

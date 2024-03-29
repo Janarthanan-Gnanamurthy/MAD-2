@@ -1,9 +1,19 @@
 from flask import request
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, marshal_with, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from models import db, User, Book, Section
+
+book_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'content': fields.String,
+    'author': fields.String,
+    'date_issued': fields.DateTime,
+    'return_date': fields.DateTime,
+    'section_id': fields.Integer
+}
 
 
 class UserResource(Resource):
@@ -51,3 +61,57 @@ class SectionResource(Resource):
         db.session.add(new_section)
         db.session.commit()
         return {"message": "Section created successfully"}, 201
+
+
+class BookResource(Resource):
+    @marshal_with(book_fields)
+    def get(self, book_id=None):
+        if book_id:
+            book = Book.query.get(book_id)
+            if book:
+                return book, 200
+            else:
+                return {"message": "Book not found"}, 404
+        else:
+            books = Book.query.all()
+            return books, 200
+
+    @marshal_with(book_fields)
+    def post(self):
+        data = request.json
+        new_book = Book(
+            name=data['name'],
+            content=data['content'],
+            author=data['author'],
+            date_issued=data['date_issued'],
+            return_date=data['return_date'],
+            section_id=data['section_id']
+        )
+        db.session.add(new_book)
+        db.session.commit()
+        return new_book, 201
+
+    @marshal_with(book_fields)
+    def put(self, book_id):
+        book = Book.query.get(book_id)
+        if book:
+            data = request.json
+            book.name = data['name']
+            book.content = data['content']
+            book.author = data['author']
+            book.date_issued = data['date_issued']
+            book.return_date = data['return_date']
+            book.section_id = data['section_id']
+            db.session.commit()
+            return book, 200
+        else:
+            return {"message": "Book not found"}, 404
+
+    def delete(self, book_id):
+        book = Book.query.get(book_id)
+        if book:
+            db.session.delete(book)
+            db.session.commit()
+            return {"message": "Book deleted successfully"}, 200
+        else:
+            return {"message": "Book not found"}, 404

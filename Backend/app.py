@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_restful import Api
-from api import UserResource, SectionResource
+from api import UserResource, SectionResource, BookResource
 
 from models import db, User, Book, Section
 
@@ -48,6 +48,7 @@ def userid():
 
 api.add_resource(UserResource, '/users', '/users/<int:user_id>')
 api.add_resource(SectionResource, '/sections', '/sections/<int:section_id>')
+api.add_resource(BookResource, '/books', '/books/<int:book_id>')
 
 if __name__ == '__main__':
     app.run(debug=True)
