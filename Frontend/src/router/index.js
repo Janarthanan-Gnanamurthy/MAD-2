@@ -45,6 +45,7 @@ router.beforeEach((to, from, next) => {
 
   if (requiresAuth && !isAuthenticated) {
     console.log('User not authenticated')
+    alert('Login Required')
     // If route requires authentication and user is not authenticated, redirect to login
     next('/login');
   } else {
