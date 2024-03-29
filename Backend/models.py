@@ -2,6 +2,15 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+user_books = db.Table('user_books',
+                      db.Column('user_id', db.Integer, db.ForeignKey(
+                          'user.id'), primary_key=True),
+                      db.Column('book_id', db.Integer, db.ForeignKey(
+                          'book.id'), primary_key=True),
+                      db.Column('date_issued', db.Date, nullable=False),
+                      db.Column('return_date', db.Date, nullable=False)
+                      )
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -10,6 +19,7 @@ class User(db.Model):
     number = db.Column(db.Integer, unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
     role = db.Column(db.String(50), nullable=False, default='User')
+    books = db.relationship('Book', secondary=user_books, backref='users')
 
 
 class Book(db.Model):
@@ -17,8 +27,6 @@ class Book(db.Model):
     name = db.Column(db.String(80), unique=True, nullable=False)
     content = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=False)
-    date_issued = db.Column(db.Date)
-    return_date = db.Column(db.Date)
     section_id = db.Column(db.Integer, db.ForeignKey(
         'section.id'), nullable=False)
 
@@ -29,4 +37,3 @@ class Section(db.Model):
     description = db.Column(db.String)
     date_created = db.Column(db.Date)
     books = db.relationship('Book', backref='section', lazy=True)
-

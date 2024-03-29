@@ -15,14 +15,6 @@
           <input type="text" id="author" v-model="book.author" class="form-control" required>
         </div>
         <div class="mb-3">
-          <label for="date_issued" class="form-label">Date Issued:</label>
-          <input type="date" id="date_issued" v-model="book.date_issued" class="form-control">
-        </div>
-        <div class="mb-3">
-          <label for="return_date" class="form-label">Return Date:</label>
-          <input type="date" id="return_date" v-model="book.return_date" class="form-control">
-        </div>
-        <div class="mb-3">
           <label for="section_id" class="form-label">Section ID:</label>
           <input type="number" id="section_id" v-model="book.section_id" class="form-control" required>
         </div>
@@ -41,8 +33,6 @@
           name: '',
           content: '',
           author: '',
-          date_issued: '',
-          return_date: '',
           section_id: ''
         },
         apiUrl: 'http://localhost:5000/books'  // Replace with your API URL
@@ -66,8 +56,6 @@
             this.book.name = '';  // Clear input fields
             this.book.content = '';
             this.book.author = '';
-            this.book.date_issued = '';
-            this.book.return_date = '';
             this.book.section_id = '';
           } else {
             alert(responseData.message || 'Failed to add book');  // Show error message

@@ -10,9 +10,15 @@ book_fields = {
     'name': fields.String,
     'content': fields.String,
     'author': fields.String,
-    'date_issued': fields.DateTime,
-    'return_date': fields.DateTime,
     'section_id': fields.Integer
+}
+
+section_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'description': fields.String,
+    'date_created': fields.DateTime(dt_format='iso8601'),
+    'books': fields.List(fields.Nested(book_fields))
 }
 
 
@@ -43,17 +49,22 @@ class UserResource(Resource):
 
 
 class SectionResource(Resource):
+    @marshal_with(section_fields)
     def get(self, section_id=None):
         if section_id:
             section = Section.query.get(section_id)
             if section:
-                return str(section.__dict__), 200
+                # Fetch all books related to the section
+                books = Book.query.filter_by(section_id=section_id).all()
+                section.books = books
+                return section, 200
             else:
                 return {"message": "Section not found"}, 404
         else:
             sections = Section.query.all()
-            return [{'name': section.name, 'description': section.description, 'date_created': f'{section.date_created}'} for section in sections], 200
+            return sections, 200
 
+    @marshal_with(section_fields)
     def post(self):
         data = request.json
         new_section = Section(
@@ -83,8 +94,6 @@ class BookResource(Resource):
             name=data['name'],
             content=data['content'],
             author=data['author'],
-            date_issued=data['date_issued'],
-            return_date=data['return_date'],
             section_id=data['section_id']
         )
         db.session.add(new_book)
@@ -99,8 +108,6 @@ class BookResource(Resource):
             book.name = data['name']
             book.content = data['content']
             book.author = data['author']
-            book.date_issued = data['date_issued']
-            book.return_date = data['return_date']
             book.section_id = data['section_id']
             db.session.commit()
             return book, 200
