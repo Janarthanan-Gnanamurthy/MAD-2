@@ -54,7 +54,8 @@ export default {
     fetch("http://localhost:5000/sections")
       .then(response => response.json())
       .then(data => {
-        this.sections = data;
+        this.sections = data
+        this.selectedSection = this.sections[0];
       });
   },
   methods: {
