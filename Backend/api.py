@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource, marshal_with, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 
@@ -88,18 +89,51 @@ class BookResource(Resource):
             books = Book.query.all()
             return books, 200
 
-    @marshal_with(book_fields)
     def post(self):
-        data = request.json
-        new_book = Book(
-            name=data['name'],
-            content=data['content'],
-            author=data['author'],
-            section_id=data['section_id']
-        )
-        db.session.add(new_book)
-        db.session.commit()
-        return new_book, 201
+        if request.headers.get('Content-Type') == 'application/json':
+            # Handle JSON data
+            data = request.json
+            new_book = Book(
+                name=data['name'],
+                content=data['content'],
+                author=data['author'],
+                section_id=data['section_id']
+            )
+            db.session.add(new_book)
+            db.session.commit()
+
+            return new_book, 201
+        elif request.headers.get('Content-Type').startswith('multipart/form-data'):
+            # Handle file upload
+            name = request.form.get('name')
+            content = request.form.get('content')
+            author = request.form.get('author')
+            section_id = request.form.get('section_id')
+            file = request.files.get('file')
+
+            if not (name and content and author and section_id and file):
+                return {'error': 'Missing required fields'}, 400
+
+            if file:
+                filename = secure_filename(file.filename)
+                filepath = os.path.join('uploads/books', filename)
+                file.save(filepath)
+
+                new_book = Book(
+                    name=name,
+                    content=content,
+                    author=author,
+                    section_id=section_id,
+                    image_filename=filename
+                )
+                db.session.add(new_book)
+                db.session.commit()
+
+                return new_book, 201
+            else:
+                return {'error': 'Invalid file type'}, 400
+        else:
+            return {'error': 'Unsupported Content-Type'}, 400
 
     @marshal_with(book_fields)
     def put(self, book_id):
@@ -114,6 +148,28 @@ class BookResource(Resource):
             return book, 200
         else:
             return {"message": "Book not found"}, 404
+
+    def upload_book_image(self, book_id):
+        if 'file' not in request.files:
+            return {'error': 'No file part'}, 400
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return {'error': 'No selected file'}, 400
+
+        if file and self.allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(filepath)
+
+            book = Book.query.get_or_404(book_id)
+            book.image_filename = filename
+            db.session.commit()
+
+            return {'message': 'File successfully uploaded'}, 200
+        else:
+            return {'error': 'Invalid file type'}, 400
 
     def delete(self, book_id):
         book = Book.query.get(book_id)
