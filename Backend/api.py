@@ -89,19 +89,51 @@ class BookResource(Resource):
             books = Book.query.all()
             return books, 200
 
-    @marshal_with(book_fields)
     def post(self):
-        data = request.json
-        new_book = Book(
-            name=data['name'],
-            content=data['content'],
-            author=data['author'],
-            section_id=data['section_id']
-        )
-        self.upload_book_image(new_book.id)
-        db.session.add(new_book)
-        db.session.commit()
-        return new_book, 201
+        if request.headers.get('Content-Type') == 'application/json':
+            # Handle JSON data
+            data = request.json
+            new_book = Book(
+                name=data['name'],
+                content=data['content'],
+                author=data['author'],
+                section_id=data['section_id']
+            )
+            db.session.add(new_book)
+            db.session.commit()
+
+            return new_book, 201
+        elif request.headers.get('Content-Type').startswith('multipart/form-data'):
+            # Handle file upload
+            name = request.form.get('name')
+            content = request.form.get('content')
+            author = request.form.get('author')
+            section_id = request.form.get('section_id')
+            file = request.files.get('file')
+
+            if not (name and content and author and section_id and file):
+                return {'error': 'Missing required fields'}, 400
+
+            if file:
+                filename = secure_filename(file.filename)
+                filepath = os.path.join('uploads/books', filename)
+                file.save(filepath)
+
+                new_book = Book(
+                    name=name,
+                    content=content,
+                    author=author,
+                    section_id=section_id,
+                    image_filename=filename
+                )
+                db.session.add(new_book)
+                db.session.commit()
+
+                return new_book, 201
+            else:
+                return {'error': 'Invalid file type'}, 400
+        else:
+            return {'error': 'Unsupported Content-Type'}, 400
 
     @marshal_with(book_fields)
     def put(self, book_id):
