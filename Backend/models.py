@@ -27,6 +27,7 @@ class Book(db.Model):
     name = db.Column(db.String(80), unique=True, nullable=False)
     content = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=False)
+    image_filename = db.Column(db.String(255))
     section_id = db.Column(db.Integer, db.ForeignKey(
         'section.id'), nullable=False)
 
