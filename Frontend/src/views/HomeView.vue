@@ -37,10 +37,10 @@
               >
               {{ book.name }}
             </div>
-            <span v-if="!isBookBorrowed(book.id)" class="badge badge-success badge-pill" @click="borrowBook(book)">Borrow</span>
-            <span v-else class="badge badge-danger badge-pill" @click="returnBook(book)">Return</span>
+            <span v-if="!isBookBorrowed(book.id)" class="badge badge-success badge-pill text-black" @click="borrowBook(book.id)">Borrow</span>
+            <span v-else class="badge badge-danger badge-pill text-black" @click="returnBook(book)">Return</span>
           </li>
-        </ul>
+        </ul> 
       </div>
 
     </div>
@@ -69,10 +69,30 @@ export default {
     isBookBorrowed(bookId) {
       return this.borrowedBooks.includes(bookId);
     },
-    borrowBook(book) {
-      // Simulate borrowing a book (you can replace this with an actual API call)
-      this.borrowedBooks.push(book.id);
-      alert(`You have borrowed the book: ${book.name}`);
+    async borrowBook(bookId) {
+      const data = {
+            book_id: bookId
+        };
+        try {
+          const response = await fetch('http://localhost:5000/request-book', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.$store.state.token}`
+            },
+            body: JSON.stringify(data),
+          });
+
+          const responseData = await response.json();
+
+          if (response.ok) {
+            alert(responseData.message);
+          } else {
+            throw new Error(responseData.message || 'Failed to request book');
+          }
+        } catch (error) {
+          console.error("Error requesting book:", error);
+        }
     },
     returnBook(book) {
       // Simulate returning a book (you can replace this with an actual API call)
