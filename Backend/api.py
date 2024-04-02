@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 
-from models import db, User, Book, Section
+from models import db, User, Book, Section, Request
 
 book_fields = {
     'id': fields.Integer,
@@ -22,6 +22,20 @@ section_fields = {
     'description': fields.String,
     'date_created': fields.DateTime(dt_format='iso8601'),
     'books': fields.List(fields.Nested(book_fields))
+}
+
+request_fields = {
+    'id': fields.Integer,
+    'user': fields.Nested({
+        'id': fields.Integer,
+        'username': fields.String
+    }),
+    'book': fields.Nested({
+        'id': fields.Integer,
+        'name': fields.String
+    }),
+    'date_requested': fields.String(attribute=lambda x: x.date_requested.strftime('%Y-%m-%d')),
+    'status': fields.String
 }
 
 
@@ -181,3 +195,14 @@ class BookResource(Resource):
             return {"message": "Book deleted successfully"}, 200
         else:
             return {"message": "Book not found"}, 404
+
+
+class AdminRequestsResource(Resource):
+    @marshal_with(request_fields)
+    def get(self):
+        try:
+            requests = Request.query.all()
+            print(requests[0].user.username)
+            return requests, 200
+        except Exception as e:
+            return {"message": str(e)}, 500
