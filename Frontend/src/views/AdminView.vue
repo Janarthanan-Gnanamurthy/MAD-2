@@ -57,8 +57,9 @@
         try {
           const response = await fetch('http://localhost:5000/admin/requests'); // Update with your backend endpoint
           const data = await response.json();
+          console.log(data)
           if (response.ok) {
-            this.requests = data.requests;
+            this.requests = data;
           } else {
             throw new Error(data.message || 'Failed to fetch requests');
           }

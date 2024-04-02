@@ -26,14 +26,14 @@ section_fields = {
 
 request_fields = {
     'id': fields.Integer,
-    'user': {
+    'user': fields.Nested({
         'id': fields.Integer,
         'username': fields.String
-    },
-    'book': {
+    }),
+    'book': fields.Nested({
         'id': fields.Integer,
         'name': fields.String
-    },
+    }),
     'date_requested': fields.String(attribute=lambda x: x.date_requested.strftime('%Y-%m-%d')),
     'status': fields.String
 }
@@ -202,6 +202,7 @@ class AdminRequestsResource(Resource):
     def get(self):
         try:
             requests = Request.query.all()
+            print(requests[0].user.username)
             return requests, 200
         except Exception as e:
             return {"message": str(e)}, 500
