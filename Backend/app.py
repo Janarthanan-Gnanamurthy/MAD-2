@@ -1,8 +1,8 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory
 from flask_restful import Api
 from api import UserResource, SectionResource, BookResource
 
-from models import db, User, Book, Section
+from models import db, User, BookRequest
 
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
@@ -39,6 +39,21 @@ def login():
 
     else:
         return {'message': 'this is login page'}
+
+
+@app.route('/request_book', methods=['POST'])
+def request_book():
+    data = request.json
+    user_id = data.get('user_id')
+    book_id = data.get('book_id')
+    date_requested = data.get('date_requested')
+
+    new_request = BookRequest(
+        user_id=user_id, book_id=book_id, date_requested=date_requested)
+    db.session.add(new_request)
+    db.session.commit()
+
+    return jsonify({'message': 'Book request submitted successfully'}), 200
 
 
 @app.route('/uploads/books/<filename>')
