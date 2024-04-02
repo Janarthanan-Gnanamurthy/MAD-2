@@ -56,6 +56,30 @@ def request_book():
     return jsonify({'message': 'Book request submitted successfully'}), 200
 
 
+@app.route('/approve_book_request/<int:request_id>', methods=['PUT'])
+def approve_book_request(request_id):
+    request = BookRequest.query.get(request_id)
+    if not request:
+        return jsonify({'message': 'Request not found'}), 404
+
+    request.status = 'Approved'
+    db.session.commit()
+
+    return jsonify({'message': 'Request approved successfully'}), 200
+
+
+@app.route('/reject_book_request/<int:request_id>', methods=['PUT'])
+def reject_book_request(request_id):
+    request = BookRequest.query.get(request_id)
+    if not request:
+        return jsonify({'message': 'Request not found'}), 404
+
+    request.status = 'Rejected'
+    db.session.commit()
+
+    return jsonify({'message': 'Request rejected successfully'}), 200
+
+
 @app.route('/uploads/books/<filename>')
 def uploaded_book_image(filename):
     return send_from_directory(os.path.join('uploads/books'), filename)
