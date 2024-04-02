@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, send_from_directory
 from flask_restful import Api
 from api import UserResource, SectionResource, BookResource
 
@@ -6,7 +6,7 @@ from models import db, User, Book, Section
 
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
-
+import os
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -39,6 +39,11 @@ def login():
 
     else:
         return {'message': 'this is login page'}
+
+
+@app.route('/uploads/books/<filename>')
+def uploaded_book_image(filename):
+    return send_from_directory(os.path.join('uploads/books'), filename)
 
 
 @app.route('/useridentity', methods=["GET"])
