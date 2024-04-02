@@ -12,7 +12,8 @@ book_fields = {
     'name': fields.String,
     'content': fields.String,
     'author': fields.String,
-    'section_id': fields.Integer
+    'section_id': fields.Integer,
+    'image_filename': fields.String
 }
 
 section_fields = {
@@ -89,6 +90,7 @@ class BookResource(Resource):
             books = Book.query.all()
             return books, 200
 
+    @marshal_with(book_fields)
     def post(self):
         if request.headers.get('Content-Type') == 'application/json':
             # Handle JSON data
@@ -160,7 +162,7 @@ class BookResource(Resource):
 
         if file and self.allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            filepath = os.path.join(UPLOAD_FOLDER, filename)
+            filepath = os.path.join('uploads', filename)
             file.save(filepath)
 
             book = Book.query.get_or_404(book_id)

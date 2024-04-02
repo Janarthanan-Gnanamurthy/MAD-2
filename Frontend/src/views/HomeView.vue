@@ -19,7 +19,6 @@
           </li>
         </ul>
       </div>
-      
       <!-- Book List -->
       <div class="col-md-8">
         <h3 v-if="selectedSection">Books in {{ selectedSection.name }}</h3>
@@ -30,12 +29,20 @@
             :key="book.id" 
             class="list-group-item d-flex justify-content-between align-items-center"
           >
-            {{ book.name }}
+            <div class="d-flex align-items-center">
+              <img 
+                :src="'http://localhost:5000/uploads/books/' + book.image_filename" 
+                alt="Book Cover" 
+                style="height: 50px; margin-right: 10px;"
+              >
+              {{ book.name }}
+            </div>
             <span v-if="!isBookBorrowed(book.id)" class="badge badge-success badge-pill" @click="borrowBook(book)">Borrow</span>
             <span v-else class="badge badge-danger badge-pill" @click="returnBook(book)">Return</span>
           </li>
         </ul>
       </div>
+
     </div>
   </div>
 </template>
