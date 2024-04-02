@@ -38,3 +38,12 @@ class Section(db.Model):
     description = db.Column(db.String)
     date_created = db.Column(db.Date)
     books = db.relationship('Book', backref='section', lazy=True)
+
+
+class BookRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    # Status can be 'Pending', 'Approved', or 'Rejected'
+    status = db.Column(db.String(50), nullable=False, default='Pending')
+    date_requested = db.Column(db.Date, nullable=False)
