@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import date
+from datetime import date, timedelta
 
 db = SQLAlchemy()
 
@@ -9,7 +9,7 @@ user_books = db.Table('user_books',
                       db.Column('book_id', db.Integer, db.ForeignKey(
                           'book.id'), primary_key=True),
                       db.Column('date_issued', db.Date, nullable=False),
-                      db.Column('return_date', db.Date, nullable=False)
+                      db.Column('return_date', db.Date, nullable=False),
                       )
 
 
