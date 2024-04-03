@@ -109,6 +109,35 @@ def reject_book_request(request_id):
     return jsonify({'message': 'Request rejected successfully'}), 200
 
 
+@app.route('/user/books', methods=['GET'])
+@jwt_required()
+def get_user_books():
+    user_id = get_jwt_identity()['id']
+    user = User.query.get(user_id)
+
+    acquired_books = []
+    returned_books = []
+
+    for book in user.books:
+        book_data = {
+            'id': book.id,
+            'name': book.name
+        }
+
+        user_book = next(
+            (ub for ub in book.users if ub.user_id == user_id), None)
+        if user_book:
+            book_data['return_date'] = str(user_book.return_date)
+            acquired_books.append(book_data)
+        else:
+            returned_books.append(book_data)
+
+    return jsonify({
+        'acquired_books': acquired_books,
+        'returned_books': returned_books
+    })
+
+
 @app.route('/uploads/books/<filename>')
 def uploaded_book_image(filename):
     return send_from_directory(os.path.join('uploads/books'), filename)
