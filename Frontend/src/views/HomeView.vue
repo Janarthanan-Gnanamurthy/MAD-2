@@ -1,6 +1,5 @@
 <template>
   <div class="container mt-5">
-    <h1 class="text-center mb-4">eBook Web App</h1>
     
     <div class="row">
       <!-- Section List -->

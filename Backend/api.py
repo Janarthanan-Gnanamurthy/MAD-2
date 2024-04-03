@@ -202,7 +202,6 @@ class AdminRequestsResource(Resource):
     def get(self):
         try:
             requests = Request.query.all()
-            print(requests[0].user.username)
             return requests, 200
         except Exception as e:
             return {"message": str(e)}, 500

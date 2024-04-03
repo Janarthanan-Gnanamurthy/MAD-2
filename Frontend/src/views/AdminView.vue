@@ -24,7 +24,7 @@
               <button
                 v-if="request.status === 'Pending'"
                 class="btn btn-success"
-                @click="approveRequest(request.id)"
+                @click="approveRequest(request.id, request.book.id)"
               >
                 Approve
               </button>
@@ -57,7 +57,6 @@
         try {
           const response = await fetch('http://localhost:5000/admin/requests'); // Update with your backend endpoint
           const data = await response.json();
-          console.log(data)
           if (response.ok) {
             this.requests = data;
           } else {
@@ -67,10 +66,16 @@
           console.error('Error fetching requests:', error);
         }
       },
-      async approveRequest(requestId) {
+      async approveRequest(requestId, bookId) {
+        const approve_data = {request_id: requestId, book_id: bookId };
         try {
-          const response = await fetch(`/approve-request/${requestId}`, {
-            method: 'PUT',
+          const response = await fetch(`http://localhost:5000/admin/approve`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.$store.state.token}`
+            },
+            body: JSON.stringify(approve_data)
           });
           const data = await response.json();
           if (response.ok) {
