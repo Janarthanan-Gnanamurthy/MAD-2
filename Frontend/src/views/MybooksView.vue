@@ -20,7 +20,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="mb-0">Returned Books</h3>
+        <h3 class="mb-0">Completed Books</h3>
       </div>
       <ul class="list-group list-group-flush">
         <li v-for="book in returnedBooks" :key="book.id" class="list-group-item">{{ book.name }}</li>
@@ -43,9 +43,9 @@ export default {
   },
   methods: {
     fetchUserBooks() {
-      fetch('/api/user/books', {
+      fetch('http://localhost:5000/user/books', {
         headers: {
-          'Authorization': `Bearer ${this.jwtToken}`
+          'Authorization': `Bearer ${this.$store.state.token}`
         }
       })
         .then(response => response.json())

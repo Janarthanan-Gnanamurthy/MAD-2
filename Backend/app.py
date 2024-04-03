@@ -124,11 +124,17 @@ def get_user_books():
             'name': book.name
         }
 
-        user_book = next(
-            (ub for ub in book.users if ub.user_id == user_id), None)
+        user_book = db.session.query(user_books).filter_by(
+            user_id=user_id, book_id=book.id).first()
+
         if user_book:
             book_data['return_date'] = str(user_book.return_date)
-            acquired_books.append(book_data)
+
+            # Check if return_date is passed
+            if user_book.return_date < date.today():
+                returned_books.append(book_data)
+            else:
+                acquired_books.append(book_data)
         else:
             returned_books.append(book_data)
 
