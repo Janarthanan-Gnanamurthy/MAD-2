@@ -10,7 +10,7 @@
         <li v-for="book in acquiredBooks" :key="book.id" class="list-group-item d-flex justify-content-between align-items-center">
           {{ book.name }}
           <div>
-            <button class="btn btn-primary mx-2" @click="$router.push('/book')" >Read</button>
+            <button class="btn btn-primary mx-2" @click="$router.push(`/book/${book.id}`)" >Read</button>
             <button class="btn btn-success" >Return</button>
             <span class="mx-2">Return by {{ book.return_date }}</span>
             <span v-if="isOverdue(book.return_date)" class="badge badge-danger">Overdue</span>
