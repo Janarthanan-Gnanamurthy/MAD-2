@@ -82,6 +82,7 @@ export default {
 				}
 
 				const data = await response.json();
+				alert("Registered Successfully")
 				console.log('success', data);
 			} catch (error) {
 				console.error('Error fetching courses:', error);

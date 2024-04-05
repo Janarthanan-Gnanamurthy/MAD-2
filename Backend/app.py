@@ -6,6 +6,7 @@ from models import db, User, Request, Book, user_books
 
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
+from functools import wraps
 import os
 from datetime import date, timedelta
 
@@ -62,9 +63,6 @@ def request_book():
 @jwt_required()
 def approve_book_request():
     user_id = get_jwt_identity()['id']
-    print(user_id)
-    print(request.get_json())
-    # Rename 'request_payload' to avoid conflict with Flask 'request' object
     request_payload = request.get_json()
 
     if 'book_id' not in request_payload or 'request_id' not in request_payload:
@@ -79,11 +77,7 @@ def approve_book_request():
     if not user or not book:
         return jsonify({'error': 'User or book not found'}), 404
 
-    date_issued = date.today()
-    return_date = date_issued + timedelta(days=7)
-
-    new_user_book = user_books.insert().values(user_id=user_id, book_id=book_id,
-                                               date_issued=date_issued, return_date=return_date)
+    user.books.append(book)
 
     book_request = Request.query.get(request_id)
 
@@ -91,7 +85,6 @@ def approve_book_request():
         return jsonify({'message': 'Request not found'}), 404
 
     book_request.status = 'Approved'
-    db.session.execute(new_user_book)
     db.session.commit()
 
     return jsonify({'message': 'Request approved successfully'}), 200
@@ -142,6 +135,41 @@ def get_user_books():
         'acquired_books': acquired_books,
         'returned_books': returned_books
     })
+
+
+def has_book_access(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        book_id = request.view_args.get('book_id')  # Get book_id from URL rule
+
+        current_user_id = get_jwt_identity()['id']
+        user = User.query.get(current_user_id)
+
+        if not user:
+            return jsonify({'error': 'Invalid user'}), 401
+
+        book = Book.query.get(book_id)
+        user_book = db.session.query(user_books).filter_by(
+            user_id=current_user_id, book_id=book_id).first()
+
+        if book and user_book and user_book.returned_on is None:
+            return func(*args, **kwargs)
+        else:
+            return jsonify({'error': 'Book not found or you do not have access'}), 404
+
+    return wrapper
+
+
+@app.route('/get-book/<int:book_id>', methods=['GET'])
+@jwt_required()
+@has_book_access
+def get_book_content(book_id):
+    book = Book.query.get(book_id)
+    content_path = book.content
+    try:
+        return {'pdfurl': content_path}
+    except Exception as e:
+        return {'error': str(e)}, 500
 
 
 @app.route('/uploads/books/<filename>')

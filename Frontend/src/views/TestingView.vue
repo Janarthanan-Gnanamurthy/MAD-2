@@ -42,7 +42,7 @@
           const responseData = await response.json();
   
           if (response.ok) {
-            alert(responseData.message);  // Show success message
+            alert("New Section added successfully");  // Show success message
             this.section.name = '';  // Clear input fields
             this.section.description = '';
           } else {
