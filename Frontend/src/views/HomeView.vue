@@ -36,7 +36,7 @@
               >
               {{ book.name }}
             </div>
-            <span v-if="!isBookBorrowed(book.id)" class="badge badge-success badge-pill text-black" @click="borrowBook(book.id)">Borrow</span>
+            <span v-if="!isBookBorrowed(book.id)" class="btn btn-primary " @click="borrowBook(book.id)">Borrow</span>
             <span v-else class="badge badge-danger badge-pill text-black" @click="returnBook(book)">Return</span>
           </li>
         </ul> 
