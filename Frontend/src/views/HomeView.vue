@@ -55,14 +55,28 @@ export default {
       borrowedBooks: []  // List of borrowed book ids
     };
   },
-  mounted() {
-    // Fetch sections and books data from the backend
-    fetch("http://localhost:5000/sections")
-      .then(response => response.json())
-      .then(data => {
-        this.sections = data
+  async mounted() {
+    try{
+      let response = await fetch("http://localhost:5000/sections",  {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }})
+      if (response.ok) {
+        let data = await response.json();
+        this.sections = data;
         this.selectedSection = this.sections[0];
-      });
+      } else {
+        // Check if the error is "unauthorized"
+        if (response.status === 401) {
+          alert("Login required")
+          this.$router.push({ name: 'login' });
+        }
+      }
+    }catch (error) {
+      console.error("Error Fetching:", error);
+    }
   },
   methods: {
     isBookBorrowed(bookId) {

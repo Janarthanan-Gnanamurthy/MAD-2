@@ -66,6 +66,7 @@ class UserResource(Resource):
 
 
 class SectionResource(Resource):
+    @jwt_required()
     @marshal_with(section_fields)
     def get(self, section_id=None):
         if section_id:
