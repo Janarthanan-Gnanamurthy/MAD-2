@@ -19,6 +19,7 @@
 					class="nm form-control rounded w-100"
 					placeholder="Enter password"
 					v-model="password"
+					@keyup.enter="login"
 					required
 				/>
 			</div>

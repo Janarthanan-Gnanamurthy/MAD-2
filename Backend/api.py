@@ -93,6 +93,7 @@ class SectionResource(Resource):
 
 class BookResource(Resource):
     @marshal_with(book_fields)
+    @jwt_required()
     def get(self, book_id=None):
         if book_id:
             book = Book.query.get(book_id)
