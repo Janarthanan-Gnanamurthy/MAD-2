@@ -120,7 +120,11 @@ def get_user_books():
         user_book = db.session.query(user_books).filter_by(
             user_id=user_id, book_id=book.id).first()
 
-        if user_book:
+        if user_book.returned_on:
+            book_data['returned_on'] = user_book.returned_on
+
+            returned_books.append(book_data)
+        else:
             book_data['return_date'] = str(user_book.return_date)
 
             # Check if return_date is passed
@@ -128,8 +132,6 @@ def get_user_books():
                 returned_books.append(book_data)
             else:
                 acquired_books.append(book_data)
-        else:
-            returned_books.append(book_data)
 
     return jsonify({
         'acquired_books': acquired_books,

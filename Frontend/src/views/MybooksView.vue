@@ -25,7 +25,10 @@
         <h3 class="mb-0">Completed Books</h3>
       </div>
       <ul class="list-group list-group-flush">
-        <li v-for="book in returnedBooks" :key="book.id" class="list-group-item">{{ book.name }}</li>
+        <li v-for="book in returnedBooks" :key="book.id" class="list-group-item d-flex justify-content-between align-items-center">
+          {{ book.name }}
+          <span class="mx-2">Returned On {{ book.returned_on }}</span>
+        </li>
         <li v-if="returnedBooks.length === 0" class="list-group-item">You have not returned any books yet.</li>
       </ul>
     </div>
