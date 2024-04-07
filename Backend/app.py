@@ -175,12 +175,10 @@ def get_book_content(book_id):
 @jwt_required()
 def return_book(book_id):
     user_id = get_jwt_identity()['id']
-    user_book = db.session.query(user_books).filter_by(
-        user_id=user_id, book_id=book_id).first()
-
-    user_book.returned_on = date.today()
+    db.session.query(user_books).filter_by(
+        user_id=user_id, book_id=book_id).update({'returned_on': date.today()})
     db.session.commit()
-    return {'message': 'successfully Returned Book'}, 200
+    return jsonify({'message': 'Successfully returned book'}), 200
 
 
 @app.route('/uploads/books/<filename>')

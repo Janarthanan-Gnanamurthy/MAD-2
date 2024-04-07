@@ -11,7 +11,7 @@
           {{ book.name }}
           <div>
             <button class="btn btn-primary mx-2" @click="$router.push(`/book/${book.id}`)" >Read</button>
-            <button class="btn btn-success" >Return</button>
+            <button class="btn btn-success" @click="returnBook(book.id)" >Return</button>
             <span class="mx-2">Return by {{ book.return_date }}</span>
             <span v-if="isOverdue(book.return_date)" class="badge badge-danger">Overdue</span>
           </div>
@@ -61,14 +61,14 @@ export default {
     },
     async returnBook(book_id){
       let response = await fetch(`http://localhost:5000/user/return/${book_id}`, {
-        methods: "PUT",
+        method: "PUT",
         headers:{
           'Authorization': `Bearer ${this.$store.state.token}`
         }
         
       })
       if (response.ok){
-        data = response.json()
+        data = await response.json()
         console.log(data.message)
       }
     },
