@@ -12,7 +12,6 @@
 						required
 					/>
 				</div>
-
 				<div class="mb-3">
 					<input
 						type="number"

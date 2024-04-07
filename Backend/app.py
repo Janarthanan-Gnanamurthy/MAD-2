@@ -144,7 +144,6 @@ def has_book_access(func):
 
         current_user_id = get_jwt_identity()['id']
         user = User.query.get(current_user_id)
-
         if not user:
             return jsonify({'error': 'Invalid user'}), 401
 
@@ -170,6 +169,18 @@ def get_book_content(book_id):
         return {'pdfurl': content_path}
     except Exception as e:
         return {'error': str(e)}, 500
+
+
+@app.route('/user/return/<int:book_id>', methods='GET')
+@jwt_required()
+def return_book(book_id):
+    user_id = get_jwt_identity()['id']
+    user_book = db.session.query(user_books).filter_by(
+        user_id=user_id, book_id=book_id).first()
+
+    user_book.returned_on = date.today()
+    db.session.commit()
+    return {'message': 'successfully Returned Book'}, 200
 
 
 @app.route('/uploads/books/<filename>')
