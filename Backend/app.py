@@ -171,7 +171,7 @@ def get_book_content(book_id):
         return {'error': str(e)}, 500
 
 
-@app.route('/user/return/<int:book_id>', methods='GET')
+@app.route('/user/return/<int:book_id>', methods=['PUT'])
 @jwt_required()
 def return_book(book_id):
     user_id = get_jwt_identity()['id']

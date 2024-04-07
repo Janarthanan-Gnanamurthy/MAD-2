@@ -59,6 +59,19 @@ export default {
           console.error('Error fetching user books:', error);
         });
     },
+    async returnBook(book_id){
+      let response = await fetch(`http://localhost:5000/user/return/${book_id}`, {
+        methods: "PUT",
+        headers:{
+          'Authorization': `Bearer ${this.$store.state.token}`
+        }
+        
+      })
+      if (response.ok){
+        data = response.json()
+        console.log(data.message)
+      }
+    },
     isOverdue(returnDate) {
       const today = new Date();
       const dueDate = new Date(returnDate);
