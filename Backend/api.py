@@ -69,6 +69,8 @@ class SectionResource(Resource):
     @jwt_required()
     @marshal_with(section_fields)
     def get(self, section_id=None):
+        user_id = get_jwt_identity()['id']
+        user = User.query.get_or_404(user_id)
         if section_id:
             section = Section.query.get(section_id)
             if section:
@@ -79,8 +81,9 @@ class SectionResource(Resource):
             else:
                 return {"message": "Section not found"}, 404
         else:
+            books = [book.id for book in user.books]
             sections = Section.query.all()
-            return sections, 200
+            return {'section': sections, 'userBooks': books}, 200
 
     @marshal_with(section_fields)
     def post(self):
