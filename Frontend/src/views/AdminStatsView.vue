@@ -79,7 +79,7 @@
     name: 'AdminStats',
     data() {
       return {
-				"totalUsers": [
+				totalUsersData: [
 					{ "date": "2022-01-01", "count": 100 },
 					{ "date": "2022-02-01", "count": 120 },
 					{ "date": "2022-03-01", "count": 150 },
@@ -87,7 +87,7 @@
 					{ "date": "2022-05-01", "count": 200 },
 					{ "date": "2022-06-01", "count": 220 }
 				],
-				"userActivity": [
+				userActivityData: [
 					{ "month": "January", "count": 500 },
 					{ "month": "February", "count": 600 },
 					{ "month": "March", "count": 700 },
@@ -95,7 +95,7 @@
 					{ "month": "May", "count": 900 },
 					{ "month": "June", "count": 1000 }
 				],
-				"booksBySection": [
+				booksBySectionData: [
 					{ "section": "Fiction", "count": 200 },
 					{ "section": "Non-Fiction", "count": 150 },
 					{ "section": "Biography", "count": 100 },
@@ -103,7 +103,7 @@
 					{ "section": "Technology", "count": 120 },
 					{ "section": "History", "count": 90 }
 				],
-				"topBooks": [
+				topBooks: [
 					{ "id": 1, "title": "The Great Gatsby" },
 					{ "id": 2, "title": "To Kill a Mockingbird" },
 					{ "id": 3, "title": "1984" },
@@ -119,6 +119,7 @@
     },
     mounted() {
       // this.fetchAdminStats();
+			this.renderCharts()
     },
     methods: {
       // async fetchAdminStats() {
