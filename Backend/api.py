@@ -1,5 +1,5 @@
 from flask import request
-from flask_restful import Resource, marshal_with, fields
+from flask_restful import Resource, marshal_with, fields, marshal
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import os
@@ -21,7 +21,7 @@ section_fields = {
     'name': fields.String,
     'description': fields.String,
     'date_created': fields.DateTime(dt_format='iso8601'),
-    'books': fields.List(fields.Nested(book_fields))
+    'books': fields.List(fields.Nested(book_fields)),
 }
 
 request_fields = {
@@ -67,7 +67,6 @@ class UserResource(Resource):
 
 class SectionResource(Resource):
     @jwt_required()
-    @marshal_with(section_fields)
     def get(self, section_id=None):
         user_id = get_jwt_identity()['id']
         user = User.query.get_or_404(user_id)
@@ -77,13 +76,14 @@ class SectionResource(Resource):
                 # Fetch all books related to the section
                 books = Book.query.filter_by(section_id=section_id).all()
                 section.books = books
-                return section, 200
+                return {'namaskar': 'beta'}, 200
             else:
                 return {"message": "Section not found"}, 404
         else:
             books = [book.id for book in user.books]
             sections = Section.query.all()
-            return {'section': sections, 'userBooks': books}, 200
+            serial_sections = marshal(sections, section_fields)
+            return {'sections': serial_sections, 'userBooks': books}, 200
 
     @marshal_with(section_fields)
     def post(self):
