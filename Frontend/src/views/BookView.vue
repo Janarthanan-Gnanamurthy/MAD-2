@@ -34,8 +34,11 @@ export default {
 					console.log(data)
 					this.pdfUrl = data.pdfurl
 				}
-
-
+				if (response.status == 404){
+					console.log("Alert User doesn't Have access")
+					alert("User doesn't have access")
+					this.$router.push('/')
+				}
 			}catch (error) {
 				console.log("error While book:", error)
 			}

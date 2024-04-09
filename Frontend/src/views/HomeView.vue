@@ -37,7 +37,10 @@
               {{ book.name }}
             </div>
             <span v-if="!isBookBorrowed(book.id)" class="btn btn-success " @click="borrowBook(book.id)">Borrow</span>
-            <span v-else class="btn btn-primary " @click="returnBook(book.id)">Return</span>
+            <div  v-else >
+              <button class="btn btn-success mx-2" @click='$router.push(`/book/${book.id}`)'>Read</button>
+              <span class="btn btn-primary " @click="returnBook(book.id)">Return</span>
+            </div>
           </li>
         </ul> 
       </div>
