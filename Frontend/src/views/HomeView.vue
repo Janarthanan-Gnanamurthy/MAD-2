@@ -37,7 +37,7 @@
               {{ book.name }}
             </div>
             <span v-if="!isBookBorrowed(book.id)" class="btn btn-success " @click="borrowBook(book.id)">Borrow</span>
-            <span v-else class="btn btn-primary " @click="returnBook(book)">Return</span>
+            <span v-else class="btn btn-primary " @click="returnBook(book.id)">Return</span>
           </li>
         </ul> 
       </div>
@@ -109,14 +109,19 @@ export default {
           console.error("Error requesting book:", error);
         }
     },
-    returnBook(book) {
-      // Simulate returning a book (you can replace this with an actual API call)
-      const index = this.borrowedBooks.indexOf(book.id);
-      if (index > -1) {
-        this.borrowedBooks.splice(index, 1);
+    async returnBook(book_id){
+      let response = await fetch(`http://localhost:5000/user/return/${book_id}`, {
+        method: "PUT",
+        headers:{
+          'Authorization': `Bearer ${this.$store.state.token}`
+        }
+        
+      })
+      if (response.ok){
+        data = await response.json()
+        console.log(data.message)
       }
-      alert(`You have returned the book: ${book.name}`);
-    }
+    },
   }
 };
 </script>
