@@ -36,8 +36,8 @@
               >
               {{ book.name }}
             </div>
-            <span v-if="!isBookBorrowed(book.id)" class="btn btn-primary " @click="borrowBook(book.id)">Borrow</span>
-            <span v-else class="badge badge-danger badge-pill text-black" @click="returnBook(book)">Return</span>
+            <span v-if="!isBookBorrowed(book.id)" class="btn btn-success " @click="borrowBook(book.id)">Borrow</span>
+            <span v-else class="btn btn-primary " @click="returnBook(book)">Return</span>
           </li>
         </ul> 
       </div>
@@ -52,7 +52,7 @@ export default {
     return {
       sections: [],
       selectedSection: null,
-      borrowedBooks: []  // List of borrowed book ids
+      borrowedBooks: [] 
     };
   },
   async mounted() {
@@ -65,8 +65,10 @@ export default {
             }})
       if (response.ok) {
         let data = await response.json();
-        this.sections = data;
+        console.log(data)
+        this.sections = data.sections;
         this.selectedSection = this.sections[0];
+        this.borrowedBooks = data.userBooks;
       } else {
         // Check if the error is "unauthorized"
         if (response.status === 401) {
