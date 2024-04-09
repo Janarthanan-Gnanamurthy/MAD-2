@@ -26,10 +26,6 @@
 			<button @click="login" class="btn btn-primary rounded w-100 mt-3">
 				Sign In
 			</button>
-			<p class="mt-3 text-center">
-				New to ECHO?
-				<a href="/Register">Sign up</a>
-			</p>
 
 		</div>
 	</main>
@@ -49,8 +45,28 @@ export default {
 		async login(){
 			const FormData = {username: this.name, password: this.password}
 			try {
-				await this.$store.dispatch('login', FormData);
-				this.$router.push('/');
+				const response = await fetch('http://localhost:5000/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(FormData),
+        });
+
+				if (response.status === 401 ){
+					alert('No Admin Previledges')
+				}
+				else if (!response.ok) {
+          alert('Login Failed')
+          throw new Error('Login failed');
+        }
+
+        const data = await response.json();
+        const token = data.access_token;
+        localStorage.setItem('jwt_token', token);
+        this.$store.commit('AUTH_SUCCESS', token);
+
+				this.$router.push('/admin');
 			} catch (error) {
 				console.error('Login Error:', error.message);
 			}

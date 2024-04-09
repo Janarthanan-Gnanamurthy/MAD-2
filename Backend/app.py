@@ -43,6 +43,21 @@ def login():
         return {'message': 'this is login page'}
 
 
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    response = request.json
+    user = User.query.filter_by(username=response['username']).first()
+    if user.role == 'admin':
+        if user and response['password'] == user.password:
+            access_token = create_access_token(
+                identity={'id': user.id, 'username': user.username, 'email': user.email})
+            return {'access_token': access_token}, 200
+        else:
+            return {'message': 'Wrong Username or Password'}, 404
+    else:
+        return {'message': 'No Admin Priveledges'}, 401
+
+
 @app.route('/request-book', methods=['POST'])
 @jwt_required()
 def request_book():
