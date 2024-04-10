@@ -52,6 +52,11 @@ const router = createRouter({
       component: () => import('../views/AdminLoginView.vue')
     },
     {
+      path: '/admin/section/edit',
+      name: 'sectionedit',
+      component: () => import('../views/EditSectionView.vue')
+    },
+    {
       path: '/admin/stats',
       name: 'adminstats',
       component: () => import('../views/AdminStatsView.vue')
