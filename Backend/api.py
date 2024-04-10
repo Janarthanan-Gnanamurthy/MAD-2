@@ -136,6 +136,21 @@ class BookResource(Resource):
             return books, 200
 
     @marshal_with(book_fields)
+    @jwt_required()
+    def put(self, book_id):
+        book = Book.query.get(book_id)
+        if book:
+            data = request.json
+            book.name = data['name']
+            book.content = data['content']
+            book.author = data['author']
+            book.section_id = data['section_id']
+            db.session.commit()
+            return book, 200
+        else:
+            return {"message": "Book not found"}, 404
+
+    @marshal_with(book_fields)
     def post(self):
         if request.headers.get('Content-Type') == 'application/json':
             # Handle JSON data
@@ -181,20 +196,6 @@ class BookResource(Resource):
                 return {'error': 'Invalid file type'}, 400
         else:
             return {'error': 'Unsupported Content-Type'}, 400
-
-    @marshal_with(book_fields)
-    def put(self, book_id):
-        book = Book.query.get(book_id)
-        if book:
-            data = request.json
-            book.name = data['name']
-            book.content = data['content']
-            book.author = data['author']
-            book.section_id = data['section_id']
-            db.session.commit()
-            return book, 200
-        else:
-            return {"message": "Book not found"}, 404
 
     def upload_book_image(self, book_id):
         if 'file' not in request.files:
