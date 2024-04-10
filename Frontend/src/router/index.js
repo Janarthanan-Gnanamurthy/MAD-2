@@ -52,7 +52,7 @@ const router = createRouter({
       component: () => import('../views/AdminLoginView.vue')
     },
     {
-      path: '/admin/section/edit',
+      path: '/admin/section/edit/:section_id',
       name: 'sectionedit',
       component: () => import('../views/EditSectionView.vue')
     },
