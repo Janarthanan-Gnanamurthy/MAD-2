@@ -76,7 +76,9 @@ class SectionResource(Resource):
                 # Fetch all books related to the section
                 books = Book.query.filter_by(section_id=section_id).all()
                 section.books = books
-                return {'namaskar': 'beta'}, 200
+                serial_section = marshal(section, section_fields)
+
+                return serial_section, 200
             else:
                 return {"message": "Section not found"}, 404
         else:
@@ -84,6 +86,30 @@ class SectionResource(Resource):
             sections = Section.query.all()
             serial_sections = marshal(sections, section_fields)
             return {'sections': serial_sections, 'userBooks': books}, 200
+
+    @jwt_required()
+    def put(self, section_id):
+        data = request.json
+        section = Section.query.get(section_id)
+        if not section:
+            return {"message": "Section not found"}, 404
+
+        # Update section details
+        section.name = data.get('name', section.name)
+        section.description = data.get('description', section.description)
+
+        # Remove existing books from the section
+        section.books.clear()
+
+        # Add books to the section
+        book_ids = data.get('book_ids', [])
+        for book_id in book_ids:
+            book = Book.query.get(book_id)
+            if book:
+                section.books.append(book)
+
+        db.session.commit()
+        return {"message": "Section updated successfully"}, 200
 
     @marshal_with(section_fields)
     def post(self):
