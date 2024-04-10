@@ -94,8 +94,20 @@ class SectionResource(Resource):
         if not section:
             return {"message": "Section not found"}, 404
 
+        # Update section details
         section.name = data.get('name', section.name)
         section.description = data.get('description', section.description)
+
+        # Remove existing books from the section
+        section.books.clear()
+
+        # Add books to the section
+        book_ids = data.get('book_ids', [])
+        for book_id in book_ids:
+            book = Book.query.get(book_id)
+            if book:
+                section.books.append(book)
+
         db.session.commit()
         return {"message": "Section updated successfully"}, 200
 
