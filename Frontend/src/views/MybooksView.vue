@@ -11,6 +11,7 @@
           {{ book.name }}
           <div>
             <button class="btn btn-primary mx-2" @click="$router.push(`/book/${book.id}`)" >Read</button>
+            <button class="btn btn-secondary mx-2" @click="openFeedbackModal(book.id)">Feedback</button>
             <button class="btn btn-success" @click="returnBook(book.id)" >Return</button>
             <span class="mx-2">Return by {{ book.return_date }}</span>
             <span v-if="isOverdue(book.return_date)" class="badge badge-danger">Overdue</span>
@@ -32,6 +33,28 @@
         <li v-if="returnedBooks.length === 0" class="list-group-item">You have not returned any books yet.</li>
       </ul>
     </div>
+    <div v-if="isFeedbackModalOpen" class="modal" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content"> 
+          <div class="modal-header">
+            <h5 class="modal-title">Feedback</h5>
+            <button type="button" class="close" @click="closeFeedbackModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="feedbackText">Feedback:</label>
+              <textarea class="form-control" id="feedbackText" v-model="currentFeedback"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeFeedbackModal">Close</button>
+            <button type="button" class="btn btn-primary" @click="feedBack">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,6 +64,9 @@ export default {
     return {
       acquiredBooks: [],
       returnedBooks: [],
+      currentFeedback: '', // To store current feedback for modal
+      selectedBookId: null,
+      isFeedbackModalOpen: false
     };
   },
   mounted() {
@@ -73,6 +99,29 @@ export default {
       if (response.ok){
         data = await response.json()
         console.log(data.message)
+      }
+    },
+    openFeedbackModal(book_id) {
+      this.selectedBookId = book_id;
+      this.isFeedbackModalOpen = true; // Using jQuery to show Bootstrap modal
+    },
+    closeFeedbackModal() {
+      this.isFeedbackModalOpen = false; // Hide the modal
+    },
+    async feedBack() {
+      let response = await fetch(`http://localhost:5000/user/feedback/${this.selectedBookId}`, {
+        method: "PUT",
+        headers: {
+          'Authorization': `Bearer ${this.$store.state.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ feedback: this.currentFeedback })
+      });
+
+      if (response.ok) {
+        let data = await response.json();
+        console.log(data.message);
+        this.isFeedbackModalOpen = false
       }
     },
     isOverdue(returnDate) {

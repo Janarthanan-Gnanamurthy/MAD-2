@@ -198,6 +198,26 @@ def return_book(book_id):
     return jsonify({'message': 'Successfully returned book'}), 200
 
 
+@app.route('/user/feedback/<int:book_id>', methods=["PUT"])
+@jwt_required()
+def feedback(book_id):
+    response = request.get_json()
+    print(response)
+    user_id = get_jwt_identity()['id']
+
+    result = db.session.query(user_books).filter_by(
+        user_id=user_id, book_id=book_id
+    ).update(
+        {'feedback': response['feedback']}, synchronize_session=False
+    )
+    if result == 0:
+        return {'message': 'user_book not found'}
+
+    db.session.commit()
+
+    return {'message': 'Successfully updated'}
+
+
 @app.route('/uploads/books/<filename>')
 def uploaded_book_image(filename):
     return send_from_directory(os.path.join('uploads/books'), filename)
