@@ -202,15 +202,17 @@ def return_book(book_id):
 @jwt_required()
 def feedback(book_id):
     response = request.get_json()
+    print(response)
     user_id = get_jwt_identity()['id']
 
-    user_book = db.session.query(user_books).filter_by(
-        user_id=user_id, book_id=book_id).first()
-
-    if not user_book:
+    result = db.session.query(user_books).filter_by(
+        user_id=user_id, book_id=book_id
+    ).update(
+        {'feedback': response['feedback']}, synchronize_session=False
+    )
+    if result == 0:
         return {'message': 'user_book not found'}
 
-    user_book.feedback = response['feedback']
     db.session.commit()
 
     return {'message': 'Successfully updated'}

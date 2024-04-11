@@ -50,7 +50,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeFeedbackModal">Close</button>
-            <button type="button" class="btn btn-primary" @click="updateFeedback">Save changes</button>
+            <button type="button" class="btn btn-primary" @click="feedBack">Save changes</button>
           </div>
         </div>
       </div>
@@ -121,7 +121,7 @@ export default {
       if (response.ok) {
         let data = await response.json();
         console.log(data.message);
-        $('#feedbackModal').modal('hide'); // Hide modal after successful update
+        this.isFeedbackModalOpen = false
       }
     },
     isOverdue(returnDate) {
