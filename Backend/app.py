@@ -194,6 +194,8 @@ def return_book(book_id):
     user_id = get_jwt_identity()['id']
     db.session.query(user_books).filter_by(
         user_id=user_id, book_id=book_id).update({'returned_on': date.today()})
+    Request.query.filter_by(user_id=user_id, book_id=book_id).update(
+        {'status': 'Completed'})
     db.session.commit()
     return jsonify({'message': 'Successfully returned book'}), 200
 

@@ -29,7 +29,7 @@
                 Approve
               </button>
               <button
-                v-else
+                v-if="request.status === 'Approved'"
                 class="btn btn-danger ml-2"
                 @click="rejectRequest(request.id)"
               >

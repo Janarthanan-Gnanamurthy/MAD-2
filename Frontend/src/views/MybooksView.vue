@@ -97,6 +97,7 @@ export default {
       if (response.ok){
         data = await response.json()
         console.log(data.message)
+        this.$router.go(0)
       }
     },
     openFeedbackModal(book_id) {
