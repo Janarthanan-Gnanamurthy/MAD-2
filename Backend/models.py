@@ -4,17 +4,17 @@ from datetime import date, timedelta
 db = SQLAlchemy()
 
 user_books = db.Table('user_books',
-                    db.Column('user_id', db.Integer, db.ForeignKey(
-                        'user.id'), primary_key=True),
-                    db.Column('book_id', db.Integer, db.ForeignKey(
-                        'book.id'), primary_key=True),
-                    db.Column('feedback', db.String),
-                    db.Column('date_issued', db.Date,
+                      db.Column('user_id', db.Integer, db.ForeignKey(
+                          'user.id'), primary_key=True),
+                      db.Column('book_id', db.Integer, db.ForeignKey(
+                          'book.id'), primary_key=True),
+                      db.Column('feedback', db.String),
+                      db.Column('date_issued', db.Date,
                                 nullable=False, default=date.today()),
-                    db.Column('return_date', db.Date, nullable=False,
+                      db.Column('return_date', db.Date, nullable=False,
                                 default=date.today() + timedelta(days=7)),
-                    db.Column('returned_on', db.Date, nullable=True)
-                    )
+                      db.Column('returned_on', db.Date, nullable=True)
+                      )
 
 
 class User(db.Model):
@@ -51,7 +51,7 @@ class Request(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
     date_requested = db.Column(
         db.Date, nullable=False, default=date.today)
-    # Possible values: Pending, Approved, Rejected
+    # Possible values: Pending, Approved, Completed, Revoked
     status = db.Column(db.String(50), nullable=False, default='Pending')
 
     user = db.relationship('User', backref='requests')
