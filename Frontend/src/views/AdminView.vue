@@ -29,11 +29,11 @@
                 Approve
               </button>
               <button
-                v-if="request.status === 'Pending'"
+                v-else
                 class="btn btn-danger ml-2"
                 @click="rejectRequest(request.id)"
               >
-                Reject
+                Revoke
               </button>
             </td>
           </tr>

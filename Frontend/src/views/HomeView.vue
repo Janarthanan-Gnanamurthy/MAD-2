@@ -14,7 +14,7 @@
             :class="{ 'active': selectedSection && selectedSection.id === section.id }"
           >
             {{ section.name }}
-            <span class="badge badge-primary badge-pill">{{ section.books.length }}</span>
+            <span class="badge badge-primary badge-pill ">{{ section.books.length }}</span>
           </li>
         </ul>
       </div>
