@@ -105,13 +105,19 @@ def approve_book_request():
     return jsonify({'message': 'Request approved successfully'}), 200
 
 
-@app.route('/reject_book_request/<int:request_id>', methods=['PUT'])
+@app.route('/admin/revoke/<int:request_id>', methods=['POST'])
+@jwt_required()
 def reject_book_request(request_id):
-    request = Request.query.get(request_id)
+    user_id = get_jwt_identity()['id']
+    response = request.get_json()
+    request = Request.query.get(response.request_id)
     if not request:
         return jsonify({'message': 'Request not found'}), 404
+    request.status = 'Revoked'
 
-    request.status = 'Rejected'
+    user_book = db.session.query(user_books).filter_by(
+        user_id=user_id, book_id=response.book_id).first()
+    db.session.delete(user_book)
     db.session.commit()
 
     return jsonify({'message': 'Request rejected successfully'}), 200
