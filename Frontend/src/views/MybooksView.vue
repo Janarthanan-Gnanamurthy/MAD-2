@@ -36,11 +36,9 @@
     <div v-if="isFeedbackModalOpen" class="modal" tabindex="-1" role="dialog" style="display: block;">
       <div class="modal-dialog" role="document">
         <div class="modal-content"> 
-          <div class="modal-header">
+          <div class="modal-header d-flex justify-content-between">
             <h5 class="modal-title">Feedback</h5>
-            <button type="button" class="close" @click="closeFeedbackModal">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn btn-danger close" @click="closeFeedbackModal">X</button>
           </div>
           <div class="modal-body">
             <div class="form-group">
