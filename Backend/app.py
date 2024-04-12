@@ -8,7 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_cors import CORS
 from functools import wraps
 import os
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -33,6 +33,7 @@ def login():
         response = request.json
         user = User.query.filter_by(username=response['username']).first()
         if user and response['password'] == user.password:
+            user.last_visited = datetime.now()
             access_token = create_access_token(
                 identity={'id': user.id, 'username': user.username, 'email': user.email})
             return {'access_token': access_token}, 200
@@ -114,7 +115,7 @@ def reject_book_request():
     if not db_request:
         return jsonify({'message': 'Request not found'}), 404
     db_request.status = 'Revoked'
-    
+
     user_book = db.session.query(UserBooks).filter_by(
         user_id=user_id, book_id=response['book_id']
     ).first()
