@@ -116,8 +116,9 @@
       getStatusClass(status) {
         return {
           'text-success': status === 'Approved',
-          'text-danger': status === 'Rejected',
+          'text-danger': status === 'Revoked',
           'text-warning': status === 'Pending',
+          'text-success': status === 'Completed',
         };
       },
     },

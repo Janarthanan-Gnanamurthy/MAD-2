@@ -114,7 +114,7 @@ def reject_book_request():
     if not db_request:
         return jsonify({'message': 'Request not found'}), 404
     db_request.status = 'Revoked'
-
+    
     user_book = db.session.query(UserBooks).filter_by(
         user_id=user_id, book_id=response['book_id']
     ).first()
