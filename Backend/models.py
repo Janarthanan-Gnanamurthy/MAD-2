@@ -14,23 +14,16 @@ class UserBooks(db.Model):
                             default=date.today() + timedelta(days=7))
     returned_on = db.Column(db.Date, nullable=True)
 
-    # user = db.relationship('User', backref='books')
-    # book = db.relationship('Book', backref='users')
-
-    user = db.relationship('User', backref=db.backref(
-        'user_book_associations', lazy='dynamic'))
-    book = db.relationship('Book', backref=db.backref(
-        'user_book_associations', lazy='dynamic'))
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     number = db.Column(db.Integer, unique=True, nullable=False)
-    password = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=True)
     role = db.Column(db.String(50), nullable=False, default='User')
-    books = db.relationship('Book', secondary='user_books', backref='users')
+    books = db.relationship('Book', secondary='user_books', lazy='subquery',
+                            backref=db.backref('users', lazy=True))
 
 
 class Book(db.Model):
@@ -39,8 +32,7 @@ class Book(db.Model):
     content = db.Column(db.String, nullable=False)
     author = db.Column(db.String, nullable=False)
     image_filename = db.Column(db.String(255))
-    section_id = db.Column(db.Integer, db.ForeignKey(
-        'section.id'))
+    section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
 
 
 class Section(db.Model):

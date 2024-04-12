@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 
-from models import db, User, Book, Section, Request
+from models import db, User, Book, Section, Request, UserBooks
 
 book_fields = {
     'id': fields.Integer,
@@ -82,7 +82,15 @@ class SectionResource(Resource):
             else:
                 return {"message": "Section not found"}, 404
         else:
-            books = [book.id for book in user.books]
+            books = []
+            for book in user.books:
+                user_book = db.session.query(UserBooks).filter_by(
+                    user_id=user_id, book_id=book.id
+                ).first()
+                if not user_book.returned_on:
+                    books.append(book.id)
+
+            # books = [book.id for book in user.books if user]
             sections = Section.query.all()
             serial_sections = marshal(sections, section_fields)
             return {'sections': serial_sections, 'userBooks': books}, 200
@@ -234,6 +242,7 @@ class AdminRequestsResource(Resource):
     def get(self):
         try:
             requests = Request.query.all()
+            requests = requests[::-1]
             return requests, 200
         except Exception as e:
             return {"message": str(e)}, 500

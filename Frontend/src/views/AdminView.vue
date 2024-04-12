@@ -115,10 +115,9 @@
       },
       getStatusClass(status) {
         return {
-          'text-success': status === 'Approved',
+          'text-success': status === 'Approved' || status === 'Completed',
           'text-danger': status === 'Revoked',
           'text-warning': status === 'Pending',
-          'text-success': status === 'Completed',
         };
       },
     },
