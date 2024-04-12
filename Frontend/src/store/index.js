@@ -2,7 +2,7 @@ import { createStore } from 'vuex';
 
 export default createStore({
   state: {
-    token: localStorage.getItem('jwt_token') || '',
+    token: sessionStorage.getItem('jwt_token') || '',
     status: '',
   },
   mutations: {
@@ -37,16 +37,16 @@ export default createStore({
 
         const data = await response.json();
         const token = data.access_token;
-        localStorage.setItem('jwt_token', token);
+        sessionStorage.setItem('jwt_token', token);
         commit('AUTH_SUCCESS', token);
       } catch (error) {
-        localStorage.removeItem('jwt_token');
+        sessionStorage.removeItem('jwt_token');
         commit('AUTH_ERROR');
         throw error;
       }
     },
     logout({ commit }) {
-      localStorage.removeItem('jwt_token');
+      sessionStorage.removeItem('jwt_token');
       commit('LOGOUT');
     },
   },
