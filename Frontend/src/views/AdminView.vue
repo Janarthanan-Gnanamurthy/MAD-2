@@ -31,7 +31,7 @@
               <button
                 v-if="request.status === 'Approved'"
                 class="btn btn-danger ml-2"
-                @click="rejectRequest(request.id)"
+                @click="revokeRequest(request.id, request.book.id)"
               >
                 Revoke
               </button>
@@ -88,10 +88,16 @@
           console.error('Error approving request:', error);
         }
       },
-      async rejectRequest(requestId) {
+      async revokeRequest(requestId, bookId) {
+        const Data = { request_id: requestId, book_id: bookId}
         try {
-          const response = await fetch(`/reject-request/${requestId}`, {
-            method: 'PUT',
+          const response = await fetch(`http://localhost:5000/admin/revoke`, {
+            method: 'POST',
+            headers:{
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this.$store.state.token}`
+            },
+            body: JSON.stringify(Data)
           });
           const data = await response.json();
           if (response.ok) {

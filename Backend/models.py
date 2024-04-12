@@ -3,18 +3,24 @@ from datetime import date, timedelta
 
 db = SQLAlchemy()
 
-user_books = db.Table('user_books',
-                      db.Column('user_id', db.Integer, db.ForeignKey(
-                          'user.id'), primary_key=True),
-                      db.Column('book_id', db.Integer, db.ForeignKey(
-                          'book.id'), primary_key=True),
-                      db.Column('feedback', db.String),
-                      db.Column('date_issued', db.Date,
-                                nullable=False, default=date.today()),
-                      db.Column('return_date', db.Date, nullable=False,
-                                default=date.today() + timedelta(days=7)),
-                      db.Column('returned_on', db.Date, nullable=True)
-                      )
+
+class UserBooks(db.Model):
+    __tablename__ = 'user_books'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), primary_key=True)
+    feedback = db.Column(db.String)
+    date_issued = db.Column(db.Date, nullable=False, default=date.today())
+    return_date = db.Column(db.Date, nullable=False,
+                            default=date.today() + timedelta(days=7))
+    returned_on = db.Column(db.Date, nullable=True)
+
+    # user = db.relationship('User', backref='books')
+    # book = db.relationship('Book', backref='users')
+
+    user = db.relationship('User', backref=db.backref(
+        'user_book_associations', lazy='dynamic'))
+    book = db.relationship('Book', backref=db.backref(
+        'user_book_associations', lazy='dynamic'))
 
 
 class User(db.Model):
@@ -24,7 +30,7 @@ class User(db.Model):
     number = db.Column(db.Integer, unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
     role = db.Column(db.String(50), nullable=False, default='User')
-    books = db.relationship('Book', secondary=user_books, backref='users')
+    books = db.relationship('Book', secondary='user_books', backref='users')
 
 
 class Book(db.Model):
