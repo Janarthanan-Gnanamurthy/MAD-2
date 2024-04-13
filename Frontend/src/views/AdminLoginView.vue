@@ -63,7 +63,7 @@ export default {
 
         const data = await response.json();
         const token = data.access_token;
-        localStorage.setItem('jwt_token', token);
+        sessionStorage.setItem('jwt_token', token);
         this.$store.commit('AUTH_SUCCESS', token);
 
 				this.$router.push('/admin');

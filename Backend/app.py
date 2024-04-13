@@ -34,8 +34,12 @@ def login():
         user = User.query.filter_by(username=response['username']).first()
         if user and response['password'] == user.password:
             user.last_visited = datetime.now()
+            db.session.commit()
             access_token = create_access_token(
                 identity={'id': user.id, 'username': user.username, 'email': user.email})
+
+            user.last_visited = datetime.now()
+            db.session.commit()
             return {'access_token': access_token}, 200
         else:
             return {'message': 'Wrong Username or Password'}, 404
