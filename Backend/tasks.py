@@ -8,6 +8,14 @@ import os
 load_dotenv()
 
 
+@celery.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    sender.add_periodic_task(
+        10.0,
+        send_daily_reminder.s(),
+        name='Daily Remainder'
+    )
+
 @celery.task()
 def send_daily_reminder():
     print('inside Task')
