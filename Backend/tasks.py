@@ -1,4 +1,4 @@
-from celery import shared_task
+from celery_app import celery
 from datetime import datetime, timedelta
 from models import User
 import yagmail
@@ -8,8 +8,9 @@ import os
 load_dotenv()
 
 
-@shared_task
+@celery.task()
 def send_daily_reminder():
+    print('inside Task')
     # Get the last 24 hours
     last_24_hours = datetime.now() - timedelta(days=1)
     # Get a list of users who haven't visited the app in the last 24 hours

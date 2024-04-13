@@ -10,15 +10,17 @@ from functools import wraps
 import os
 from datetime import date, timedelta, datetime
 
-from celery import Celery
-from celery.schedules import crontab
-import tasks
+import celery_app
+# from celery import Celery
+# from celery.schedules import crontab
+from tasks import send_daily_reminder
 
-celery = Celery(__name__, broker='redis://localhost:6379/0',
-                result_backend='redis://localhost:6379/1')
-celery.conf.imports = ('tasks',)
-# celery.autodiscover_tasks(['tasks'])
-
+celery = celery_app.celery
+celery.conf.update(
+    broker_url = "redis://localhost:6379/1",
+    result_backend = "redis://localhost:6379/2"
+)
+celery.Task = celery_app.ContextTask
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -30,14 +32,14 @@ app.config['JWT_SECRET_KEY'] = 'jwt-secret'
 api = Api(app)
 CORS(app, origins=['http://localhost:5173/*'])
 
-app.config.update(
-    CELERYBEAT_SCHEDULE={
-        'send_daily_reminder': {
-            'task': 'tasks.send_daily_reminder',
-            'schedule': crontab(hour=20, minute=10)
-        }
-    }
-)
+# app.config.update(
+#     CELERYBEAT_SCHEDULE={
+#         'send_daily_reminder': {
+#             'task': 'tasks.send_daily_reminder',
+#             'schedule': crontab(hour=20, minute=10)
+#         }
+#     }
+# )
 
 
 db.init_app(app)
@@ -46,10 +48,11 @@ jwt = JWTManager(app)
 with app.app_context():
     db.create_all()
 
+app.app_context().push()
 
 @app.route('/trigger-reminder', methods=['GET'])
 def trigger_reminder():
-    tasks.send_daily_reminder.delay()
+    send_daily_reminder.delay()
     return jsonify({"message": "Daily reminder task triggered successfully!"}), 200
 
 
