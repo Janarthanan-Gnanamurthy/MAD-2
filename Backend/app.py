@@ -18,7 +18,8 @@ from tasks import send_daily_reminder
 celery = celery_app.celery
 celery.conf.update(
     broker_url = "redis://localhost:6379/1",
-    result_backend = "redis://localhost:6379/2"
+    result_backend = "redis://localhost:6379/2",
+    timezone = 'Asia/Kolkata'
 )
 celery.Task = celery_app.ContextTask
 

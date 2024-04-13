@@ -1,4 +1,5 @@
 from celery_app import celery
+from celery.schedules import crontab
 from datetime import datetime, timedelta
 from models import User
 import yagmail
@@ -11,9 +12,14 @@ load_dotenv()
 @celery.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        10.0,
+        crontab(hour=0, minute=35),
         send_daily_reminder.s(),
         name='Daily Remainder'
+    )
+    sender.add_periodic_task(
+        30.0,
+        send_daily_reminder.s(),
+        name='Remainder'
     )
 
 @celery.task()
