@@ -37,7 +37,7 @@ def login():
             db.session.commit()
             access_token = create_access_token(
                 identity={'id': user.id, 'username': user.username, 'email': user.email})
-            
+
             user.last_visited = datetime.now()
             db.session.commit()
             return {'access_token': access_token}, 200
