@@ -12,7 +12,7 @@ load_dotenv()
 @celery.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(hour=0, minute=35),
+        crontab(hour=20, minute=48),
         send_daily_reminder.s(),
         name='Daily Remainder'
     )
