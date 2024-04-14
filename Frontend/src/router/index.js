@@ -47,14 +47,19 @@ const router = createRouter({
       props:true
     },
     {
-      path: '/admin',
-      name: 'admindashboard',
-      component: () => import('../views/AdminView.vue')
+      path: '/admin/requests',
+      name: 'adminrequests',
+      component: () => import('../views/AdminRequestsView.vue')
     },
     {
       path: '/admin/login',
       name: 'adminlogin',
       component: () => import('../views/AdminLoginView.vue')
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminView.vue')
     },
     {
       path: '/admin/section/edit/:id',

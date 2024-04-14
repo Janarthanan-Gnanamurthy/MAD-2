@@ -18,8 +18,9 @@
         </div>
       </div>
     </div>
+
     <!-- Sections -->
-    <div v-else-if="results.sections.length > 0" class="mt-4">
+    <div v-if="results.sections.length > 0" class="mt-4">
       <h3>Sections</h3>
       <div class="row">
         <div v-for="section in results.sections" :key="section.id" class="col-md-4 mb-4">
@@ -32,9 +33,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <div v-else >
-      <h3>No Matching Results</h3>
     </div>
   </div>
 </template>
@@ -49,9 +47,8 @@ export default {
       }
     };
   },
-  async created() {
-    const query = this.$route.query.query;
-    if (query) {
+  methods: {
+    async fetchData(query) {
       try {
         const response = await fetch(`http://localhost:5000/api/search?query=${query}`);
         const data = await response.json();
@@ -68,6 +65,12 @@ export default {
     }
     next();
   },
+  async created() {
+    const query = this.$route.query.query;
+    if (query) {
+      await this.fetchData(query);
+    }
+  }
 };
 </script>
 

@@ -6,15 +6,17 @@ import { RouterLink, RouterView } from 'vue-router'
   <main>
     <nav class="navbar bg-primary ">
       <RouterLink to="/" class="text-black">Home</RouterLink>
-      <RouterLink to="/mybooks" class="btn btn-success">Mybooks</RouterLink>
+
+      <RouterLink v-if='$store.state.user.role == "User"' to="/mybooks" class="btn btn-success">Mybooks</RouterLink>
       
-      <!-- Search bar -->
-      <div class="search-container">
-        <input v-model="query" placeholder="Search..." />
-        <button class="btn btn-primary" @click="redirectToSearch">Search</button>
+      <div v-if="$store.state.token" class="d-flex">
+        <div class="search-container">
+          <input v-model="query" placeholder="Search..." />
+          <button class="btn btn-primary" @click="redirectToSearch">Search</button>
+        </div>
+        
+        <button class="btn btn-primary" @click="logout">{{ $store.state.user.username }}</button>
       </div>
-      
-      <button class="btn btn-primary" @click="logout"> Log out</button>
     </nav>
 
     <RouterView />

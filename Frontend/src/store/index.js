@@ -2,10 +2,14 @@ import { createStore } from 'vuex';
 
 export default createStore({
   state: {
+    user: sessionStorage.getItem('user') || null,
     token: sessionStorage.getItem('jwt_token') || '',
     status: '',
   },
   mutations: {
+    USER_UPDATE(state, user) {
+      state.user = user;
+    },
     AUTH_SUCCESS(state, token) {
       state.token = token;
       state.status = 'success';
@@ -36,8 +40,11 @@ export default createStore({
         }
 
         const data = await response.json();
+        console.log(data)
         const token = data.access_token;
         sessionStorage.setItem('jwt_token', token);
+        sessionStorage.setItem('user', data.userData);
+        commit('USER_UPDATE', data.userData);
         commit('AUTH_SUCCESS', token);
       } catch (error) {
         sessionStorage.removeItem('jwt_token');

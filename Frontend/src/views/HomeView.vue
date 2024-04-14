@@ -75,6 +75,7 @@ export default {
       } else {
         // Check if the error is "unauthorized"
         if (response.status === 401) {
+          this.$store.dispatch('logout')
           alert("Login required")
           this.$router.push({ name: 'login' });
         }

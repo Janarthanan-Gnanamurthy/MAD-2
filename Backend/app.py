@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Api
 from api import UserResource, SectionResource, BookResource, AdminRequestsResource, SearchAPI
-from sqlalchemy import or_
+
 from models import db, User, Request, Book, UserBooks, Section
 
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
@@ -95,7 +95,7 @@ def login():
 
             user.last_visited = datetime.now()
             db.session.commit()
-            return {'access_token': access_token}, 200
+            return {'access_token': access_token, 'userData': {'id': user.id, 'username': user.username, 'email': user.email, 'role':user.role}}, 200
         else:
             return {'message': 'Wrong Username or Password'}, 404
 
