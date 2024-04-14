@@ -17,9 +17,9 @@ from tasks import send_daily_reminder
 
 celery = celery_app.celery
 celery.conf.update(
-    broker_url = "redis://localhost:6379/1",
-    result_backend = "redis://localhost:6379/2",
-    timezone = 'Asia/Kolkata'
+    broker_url="redis://localhost:6379/1",
+    result_backend="redis://localhost:6379/2",
+    timezone='Asia/Kolkata'
 )
 celery.Task = celery_app.ContextTask
 
@@ -51,10 +51,11 @@ with app.app_context():
 
 app.app_context().push()
 
+
 @app.route('/trigger-reminder', methods=['GET'])
 def trigger_reminder():
-    send_daily_reminder.delay()
-    return jsonify({"message": "Daily reminder task triggered successfully!"}), 200
+    job = send_daily_reminder.apply_async(coutdown=2)
+    return job.get(), 200
 
 
 @app.route('/login', methods=['GET', 'POST'])
