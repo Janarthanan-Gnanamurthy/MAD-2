@@ -121,8 +121,10 @@ export default {
         
       })
       if (response.ok){
+        alert("Book returned Successfully")
         data = await response.json()
         console.log(data.message)
+        this.$router.get(0)
       }
     },
   }
