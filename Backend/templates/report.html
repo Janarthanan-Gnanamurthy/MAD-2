@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Report for {{ user.username }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #1e568d;
+            font-weight: 600;
+        }
+
+        table {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background-color: #2b70b6;
+            color: #fff;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .text-primary {
+            color: #2b5f92 !important;
+        }
+
+        .bg-primary {
+            background-color: #3273b4 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="mb-4 text-primary">Monthly Report for {{ user.username }}</h1>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p><strong class="text-primary">Email:</strong> {{ user.email }}</p>
+                <p><strong class="text-primary">Phone Number:</strong> {{ user.number }}</p>
+            </div>
+        </div>
+        <h2 class="mb-4 text-primary">Books Borrowed</h2>
+        {% if books %}
+        <table class="table table-hover mb-5">
+            <thead class="bg-primary">
+                <tr>
+                    <th>Book ID</th>
+                    <th>Book Name</th>
+                    <th>Date Issued</th>
+                    <th>Return Date</th>
+                    <th>Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.id }}</td>
+                    <td>{{ book.name }}</td>
+                    <td>{{ book.date_issued }}</td>
+                    <td>{{ book.return_date }}</td>
+                    <td>{{ book.feedback or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No books borrowed this month.</p>
+        {% endif %}
+
+        <h2 class="mb-4 text-primary">Completed Books</h2>
+        {% if returned_books %}
+        <table class="table table-hover">
+            <thead class="bg-primary">
+                <tr>
+                    <th>Book ID</th>
+                    <th>Book Name</th>
+                    <th>Date Issued</th>
+                    <th>Return Date</th>
+                    <th>Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in returned_books %}
+                <tr>
+                    <td>{{ book.id }}</td>
+                    <td>{{ book.name }}</td>
+                    <td>{{ book.date_issued }}</td>
+                    <td>{{ book.returned_on }}</td>
+                    <td>{{ book.feedback or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No books returned this month.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

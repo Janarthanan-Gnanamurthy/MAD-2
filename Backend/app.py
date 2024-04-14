@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Api
 from api import UserResource, SectionResource, BookResource, AdminRequestsResource
 
@@ -13,7 +13,7 @@ from datetime import date, timedelta, datetime
 import celery_app
 # from celery import Celery
 # from celery.schedules import crontab
-from tasks import send_daily_reminder
+import tasks
 
 celery = celery_app.celery
 celery.conf.update(
@@ -53,9 +53,36 @@ app.app_context().push()
 
 @app.route('/trigger-reminder', methods=['GET'])
 def trigger_reminder():
-    send_daily_reminder.delay()
+    tasks.generate_monthly_report.delay()
     return jsonify({"message": "Daily reminder task triggered successfully!"}), 200
 
+@app.route('/render/<user_id>')
+def render(user_id):
+    user = User.query.get(user_id)
+    acquired_books = []
+    returned_books =[]
+    for book in user.books:
+        book_data = {
+            'id': book.id,
+            'name': book.name
+        }
+
+        user_book = db.session.query(UserBooks).filter_by(
+            user_id=user_id, book_id=book.id).first()
+
+        book_data['date_issued'] = user_book.date_issued
+        if user_book.returned_on:
+            book_data['returned_on'] = user_book.returned_on
+            returned_books.append(book_data)
+        else:
+            book_data['return_date'] = str(user_book.return_date)
+            # Check if return_date is passed
+            if user_book.return_date < date.today():
+                returned_books.append(book_data)
+            else:
+                acquired_books.append(book_data)
+
+    return render_template('report.html', user = user, books = acquired_books, returned_books = returned_books)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
