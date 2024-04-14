@@ -1,10 +1,10 @@
-from flask import request
+from flask import request, jsonify
 from flask_restful import Resource, marshal_with, fields, marshal
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
-
+from sqlalchemy import or_
 from models import db, User, Book, Section, Request, UserBooks
 
 book_fields = {
@@ -246,3 +246,19 @@ class AdminRequestsResource(Resource):
             return requests, 200
         except Exception as e:
             return {"message": str(e)}, 500
+
+class SearchAPI(Resource):
+    def get(self):
+        query = request.args.get('query')
+        books = Book.query.filter(or_(Book.name.ilike(f"%{query}%"),
+                                    Book.author.ilike(f"%{query}%"))).all()
+
+        sections = Section.query.filter(or_(Section.name.ilike(f"%{query}%"),
+                                            Section.description.ilike(f"%{query}%"))).all()
+
+        results = {
+            'books': [marshal(book, book_fields) for book in books],
+            'sections': [marshal(section, section_fields) for section in sections]
+        }
+
+        return jsonify(results)

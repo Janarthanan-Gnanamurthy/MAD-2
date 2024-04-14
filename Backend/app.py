@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Api
-from api import UserResource, SectionResource, BookResource, AdminRequestsResource
-
-from models import db, User, Request, Book, UserBooks
+from api import UserResource, SectionResource, BookResource, AdminRequestsResource, SearchAPI
+from sqlalchemy import or_
+from models import db, User, Request, Book, UserBooks, Section
 
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
@@ -11,8 +11,6 @@ import os
 from datetime import date, timedelta, datetime
 
 import celery_app
-# from celery import Celery
-# from celery.schedules import crontab
 import tasks
 
 celery = celery_app.celery
@@ -296,23 +294,6 @@ def feedback(book_id):
 def uploaded_book_image(filename):
     return send_from_directory(os.path.join('uploads/books'), filename)
 
-@app.route('/api/search', methods=['GET'])
-def search():
-    query = request.args.get('query')
-    books = Book.query.filter(or_(Book.name.ilike(f"%{query}%"),
-                                  Book.author.ilike(f"%{query}%"))).all()
-
-    sections = Section.query.filter(or_(Section.name.ilike(f"%{query}%"),
-                                        Section.description.ilike(f"%{query}%"))).all()
-
-    # Format the results
-    results = {
-        'books': [book.serialize() for book in books],
-        'sections': [section.serialize() for section in sections]
-    }
-
-    return jsonify(results)
-
 @app.route('/useridentity', methods=["GET"])
 @jwt_required()
 def userid():
@@ -323,6 +304,7 @@ api.add_resource(UserResource, '/users', '/users/<int:user_id>')
 api.add_resource(SectionResource, '/sections', '/sections/<int:section_id>')
 api.add_resource(BookResource, '/books', '/books/<int:book_id>')
 api.add_resource(AdminRequestsResource, '/admin/requests')
+api.add_resource(SearchAPI, '/api/search')
 
 if __name__ == '__main__':
     app.run(debug=True)
