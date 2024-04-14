@@ -13,12 +13,12 @@ load_dotenv()
 @celery.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(hour=22, minute=25),
+        crontab(day_of_month='1'),
         generate_monthly_report.s(),
         name='Monthly Remainder'
     )
     sender.add_periodic_task(   
-        crontab(hour=22, minute=20),
+        crontab(hour=18),
         send_daily_reminder.s(),
         name='Daily Remainder'
     )
@@ -38,7 +38,7 @@ def send_daily_reminder():
         User.last_visited < last_24_hours).all()
     # Send reminders to each user
     if len(users_to_remind) == 0:
-        print("All Users Logged In")
+        print("All Users Logged In Today")
         return
     for user in users_to_remind:
         send_reminder(user)

@@ -296,6 +296,22 @@ def feedback(book_id):
 def uploaded_book_image(filename):
     return send_from_directory(os.path.join('uploads/books'), filename)
 
+@app.route('/api/search', methods=['GET'])
+def search():
+    query = request.args.get('query')
+    books = Book.query.filter(or_(Book.name.ilike(f"%{query}%"),
+                                  Book.author.ilike(f"%{query}%"))).all()
+
+    sections = Section.query.filter(or_(Section.name.ilike(f"%{query}%"),
+                                        Section.description.ilike(f"%{query}%"))).all()
+
+    # Format the results
+    results = {
+        'books': [book.serialize() for book in books],
+        'sections': [section.serialize() for section in sections]
+    }
+
+    return jsonify(results)
 
 @app.route('/useridentity', methods=["GET"])
 @jwt_required()
