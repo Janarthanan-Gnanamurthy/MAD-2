@@ -160,7 +160,8 @@ def approve_book_request():
 @jwt_required()
 def reject_book_request():
     user_id = get_jwt_identity()['id']
-    response = request.get_json()
+    response = request.get_json()   
+    print(response)
     db_request = Request.query.get(response['request_id'])
     if not db_request:
         return jsonify({'message': 'Request not found'}), 404
@@ -288,11 +289,11 @@ def uploaded_book_image(filename):
 @app.route('/adminstats')
 def admin_stats():
     # Total users data
-    # user_count_by_date = db.session.query(func.date(User.date_created), func.count(User.id)).group_by(func.date(User.date_created)).all()
-    # total_users_data = [{'date': str(date), 'count': count} for date, count in user_count_by_date]
+    user_count_by_date = db.session.query(func.date(User.date_created), func.count(User.id)).group_by(func.date(User.date_created)).all()
+    total_users_data = [{'date': str(date), 'count': count} for date, count in user_count_by_date]
 
     # User activity data
-    user_activity_by_month = db.session.query(func.strftime('%m', User.last_visited), func.count(User.id)).group_by(func.strftime('%m', User.last_visited)).all()
+    user_activity_by_month = db.session.query(func.strftime('%m', User.date_created), func.count(User.id)).group_by(func.strftime('%m', User.date_created)).all()
     month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     user_activity_data = [{'month': month_names[int(month) - 1], 'count': count} for month, count in user_activity_by_month]
 
@@ -306,7 +307,7 @@ def admin_stats():
 
     # Combine all data into a single dictionary
     data = {
-        # 'totalUsersData': total_users_data,
+        'totalUsers': total_users_data,
         'userActivity': user_activity_data,
         'booksBySection': books_by_section_data,
         'topBooks': top_books_data

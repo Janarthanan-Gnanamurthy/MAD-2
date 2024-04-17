@@ -24,6 +24,7 @@ class User(db.Model):
     role = db.Column(db.String(50), nullable=False, default='User')
     books = db.relationship('Book', secondary='user_books', lazy='subquery',
                             backref=db.backref('users', lazy=True))
+    date_created = db.Column(db.Date, default=date.today())
     last_visited = db.Column(db.Date)
 
 

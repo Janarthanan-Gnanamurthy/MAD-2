@@ -49,7 +49,8 @@ const router = createRouter({
     {
       path: '/admin/requests',
       name: 'adminrequests',
-      component: () => import('../views/AdminRequestsView.vue')
+      component: () => import('../views/AdminRequestsView.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/login',
@@ -59,32 +60,38 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('../views/AdminView.vue')
+      component: () => import('../views/AdminView.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/section/edit/:id',
       name: 'sectionedit',
-      component: () => import('../views/EditSectionView.vue')
+      component: () => import('../views/EditSectionView.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/book/edit/:id',
       name: 'bookedit',
-      component: () => import('../views/EditBookView.vue')
+      component: () => import('../views/EditBookView.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/stats',
       name: 'adminstats',
-      component: () => import('../views/AdminStatsView.vue')
+      component: () => import('../views/AdminStatsView.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/section/new',
       name: 'addsection',
-      component: () => import('../views/AddSection.vue')
+      component: () => import('../views/AddSection.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/admin/book/new',
       name: 'newbook',
-      component: () => import('../views/NewBookView.vue')
+      component: () => import('../views/NewBookView.vue'),
+      meta: { requiresAdmin: true }
     },
   ]
 })
@@ -93,14 +100,18 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = store.getters.isAuthenticated;
   const requiresAuth = to.meta.requiresAuth;
+  const requiresAdmin = to.meta.requiresAdmin;
+  const userRole = store.state.user.role; 
 
   if (requiresAuth && !isAuthenticated) {
-    console.log('User not authenticated')
-    alert('Login Required')
-    // If route requires authentication and user is not authenticated, redirect to login
+    console.log('User not authenticated');
+    alert('Login Required');
     next('/login');
+  } else if (requiresAdmin && userRole !== 'Admin') {
+    console.log('Admin access required');
+    alert('Admin access required');
+    next('/'); 
   } else {
-    // Otherwise, proceed to the route
     next();
   }
 });

@@ -90,6 +90,7 @@
       },
       async revokeRequest(requestId, bookId) {
         const Data = { request_id: requestId, book_id: bookId}
+        console.log(Data)
         try {
           const response = await fetch(`http://localhost:5000/admin/revoke`, {
             method: 'POST',
@@ -102,7 +103,7 @@
           const data = await response.json();
           if (response.ok) {
             alert(data.message);
-            this.fetchRequests(); // Refresh the requests list
+            this.fetchRequests(); 
           } else {
             throw new Error(data.message || 'Failed to reject request');
           }

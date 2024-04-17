@@ -46,7 +46,7 @@
         </div>
         <div class="col-md-6">
           <div class="card mb-4">
-            <div class="card-header">Top 10 Books</div>
+            <div class="card-header">Listed Books</div>
             <div class="card-body">
               <ol>
                 <li v-for="book in topBooks" :key="book.id">{{ book.title }}</li>
@@ -117,7 +117,7 @@
           });
           const adminData = await response.json();
           console.log(adminData)
-          // this.totalUsersData = adminData.totalUsers;
+          this.totalUsersData = adminData.totalUsers;
           this.userActivityData = adminData.userActivity;
           this.booksBySectionData = adminData.booksBySection;
           this.topBooks = adminData.topBooks;
@@ -127,22 +127,22 @@
         }
       },
       renderCharts() {
-        // const totalUsersCtx = this.$refs.totalUsersChart.getContext('2d');
-        // const totalUsersChart = new Chart(totalUsersCtx, {
-        //   type: 'line',
-        //   data: {
-        //     labels: this.totalUsersData.map(item => item.date),
-        //     datasets: [
-        //       {
-        //         label: 'Total Users',
-        //         data: this.totalUsersData.map(item => item.count),
-        //         backgroundColor: 'rgba(54, 162, 235, 0.5)',
-        //         borderColor: 'rgba(54, 162, 235, 1)',
-        //         borderWidth: 1,
-        //       },
-        //     ],
-        //   },
-        // });
+        const totalUsersCtx = this.$refs.totalUsersChart.getContext('2d');
+        const totalUsersChart = new Chart(totalUsersCtx, {
+          type: 'line',
+          data: {
+            labels: this.totalUsersData.map(item => item.date),
+            datasets: [
+              {
+                label: 'Total Users',
+                data: this.totalUsersData.map(item => item.count),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+              },
+            ],
+          },
+        });
   
         const userActivityCtx = this.$refs.userActivityChart.getContext('2d');
         const userActivityChart = new Chart(userActivityCtx, {

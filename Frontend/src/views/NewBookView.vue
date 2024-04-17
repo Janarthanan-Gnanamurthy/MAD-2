@@ -14,9 +14,11 @@
         <label for="author" class="form-label">Author:</label>
         <input type="text" id="author" v-model="book.author" class="form-control" required>
       </div>
-      <div class="mb-3">
-        <label for="section_id" class="form-label">Section ID:</label>
-        <input type="number" id="section_id" v-model="book.section_id" class="form-control" required>
+      <div class="form-group">
+        <label for="section">Section: </label>
+        <select class="form-control" id="section" v-model="book.section_id">
+          <option v-for="section in sections" :key="section.id" :value="section.id">{{ section.name }}</option>
+        </select>
       </div>
       <div class="mb-3">
         <label for="image" class="form-label">Image:</label>
@@ -33,15 +35,19 @@
 export default {
   data() {
     return {
+      sections: [],
       book: {
         name: '',
         content: '',
         author: '',
         section_id: '',
-        image: null  // Added image property
+        image: null  
       },
-      apiUrl: 'http://localhost:5000/books'  // Replace with your API URL
+      apiUrl: 'http://localhost:5000/books'  
     };
+  },
+  created() {
+    this.fetchSections();
   },
   methods: {
     async addBook() {
@@ -51,11 +57,11 @@ export default {
         formData.append('content', this.book.content);
         formData.append('author', this.book.author);
         formData.append('section_id', this.book.section_id);
-        formData.append('file', this.$refs.image.files[0]);  // Append image file
+        formData.append('file', this.$refs.image.files[0]);
 
         const response = await fetch(this.apiUrl, {
           method: 'POST',
-          body: formData  // Use formData instead of JSON.stringify
+          body: formData  
         });
 
         const responseData = await response.json();
@@ -66,7 +72,7 @@ export default {
           this.book.content = '';
           this.book.author = '';
           this.book.section_id = '';
-          this.$refs.image.value = '';  // Clear image input field
+          this.$refs.image.value = '';  
         } else {
           alert(responseData.message || 'Failed to add book');
         }
@@ -74,7 +80,26 @@ export default {
         console.error('Error adding book:', error);
         alert('An error occurred while adding the book');
       }
-    }
+    },
+    fetchSections() {
+      fetch('http://localhost:5000/sections', {
+				headers: {
+          'Authorization': `Bearer ${this.$store.state.token}`
+        },
+			})
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Sections not found');
+          }
+          return response.json();
+        })
+        .then(data => {
+          this.sections = data.sections;
+        })
+        .catch(error => {
+          console.error('Error fetching sections:', error);
+        });
+    },
   }
 };
 </script>
