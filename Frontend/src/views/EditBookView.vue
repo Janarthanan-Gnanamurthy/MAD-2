@@ -111,7 +111,7 @@ export default {
         .then(data => {
           console.log('Book updated successfully:', data);
           // Redirect or show a success message
-          this.$router.push('/');  // Assuming you have a route named 'BookList' for listing books
+          this.$router.push('/admin');  // Assuming you have a route named 'BookList' for listing books
         })
         .catch(error => {
           this.errorMessage = 'Error updating book: ' + error.message;

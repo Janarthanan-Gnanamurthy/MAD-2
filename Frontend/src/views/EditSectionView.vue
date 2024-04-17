@@ -95,7 +95,7 @@ export default {
       .then(data => {
         alert(data.message);
         // Redirect to section list page
-        this.$router.push('/');
+        this.$router.push('/admin');
       })
       .catch(error => {
         console.error('Error updating section:', error);

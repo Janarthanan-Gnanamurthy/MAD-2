@@ -77,12 +77,12 @@ const router = createRouter({
       component: () => import('../views/AdminStatsView.vue')
     },
     {
-      path: '/Testing',
-      name: 'testing',
-      component: () => import('../views/TestingView.vue')
+      path: '/admin/section/new',
+      name: 'addsection',
+      component: () => import('../views/AddSection.vue')
     },
     {
-      path: '/newbook',
+      path: '/admin/book/new',
       name: 'newbook',
       component: () => import('../views/NewBookView.vue')
     },

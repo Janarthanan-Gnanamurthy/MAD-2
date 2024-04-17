@@ -14,13 +14,19 @@
             :class="{ 'active': selectedSection && selectedSection.id === section.id }"
           >
             {{ section.name }}
-            <span class="badge badge-primary badge-pill ">{{ section.books.length }}</span>
+            <div>
+              
+              <button class="btn btn-warning mx-2" @click='$router.push(`admin/section/edit/${section.id}`)' style="border-radius: 10px;">Edit</button>
+              <button v-if="!section.books.length" class="btn btn-danger mx-2" @click="deleteBook(book.id)" style="border-radius: 10px;">Delete</button>
+              <span class="badge bg-secondary badge-pill " style="border-radius: 10px;">{{ section.books.length }}</span>
+            </div>
           </li>
         </ul>
       </div>
       <!-- Book List -->
       <div class="col-md-8">
-        <h3 v-if="selectedSection">Books in {{ selectedSection.name }}</h3>
+        <h3 v-if="selectedSection">{{ selectedSection.name }}</h3>
+        <h5 v-if="selectedSection" class="mb-4">{{ selectedSection.description }}</h5>
         
         <ul v-if="selectedSection" class="list-group">
           <li 
@@ -36,10 +42,10 @@
               >
               {{ book.name }}
             </div>
-            <span v-if="!isBookBorrowed(book.id)" class="btn btn-success " @click="borrowBook(book.id)">Borrow</span>
-            <div  v-else >
-              <button class="btn btn-success mx-2" @click='$router.push(`/book/${book.id}`)'>Read</button>
-              <span class="btn btn-primary " @click="returnBook(book.id)">Return</span>
+            <div>
+              <!-- <button class="btn btn-success mx-2" @click='$router.push(`/book/${book.id}`)'>Read</button> -->
+              <button class="btn btn-warning mx-2" @click='$router.push(`admin/book/edit/${book.id}`)'>Edit</button>
+              <button class="btn btn-danger mx-2" @click="deleteBook(book.id)">Delete</button>
             </div>
           </li>
         </ul> 
@@ -85,49 +91,31 @@ export default {
     }
   },
   methods: {
-    isBookBorrowed(bookId) {
-      return this.borrowedBooks.includes(bookId);
-    },
-    async borrowBook(bookId) {
-      const data = {
-            book_id: bookId
-        };
-        try {
-          const response = await fetch('http://localhost:5000/request-book', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${this.$store.state.token}`
-            },
-            body: JSON.stringify(data),
-          });
+    async deleteBook(bookId) {
+      const url = `http://localhost:5000/books/${bookId}`;  // Replace with your actual API endpoint
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,  // Adjust based on authentication method
+        },
+      });
 
-          const responseData = await response.json();
-
-          if (response.ok) {
-            alert(responseData.message);
-          } else {
-            throw new Error(responseData.message || 'Failed to request book');
-          }
-        } catch (error) {
-          console.error("Error requesting book:", error);
-        }
-    },
-    async returnBook(book_id){
-      let response = await fetch(`http://localhost:5000/user/return/${book_id}`, {
-        method: "PUT",
-        headers:{
-          'Authorization': `Bearer ${this.$store.state.token}`
-        }
-        
-      })
-      if (response.ok){
-        alert("Book returned Successfully")
-        data = await response.json()
-        console.log(data.message)
-        this.$router.get(0)
+      if (!response.ok) {
+        throw new Error(`Error deleting book: ${await response.text()}`);
       }
-    },
+
+      const data = await response.json();
+      console.log('Book deleted:', data);
+
+      // Handle success or error in your component
+      // For example:
+      if (data.message === "Book deleted successfully") {
+        alert("Book successfully deleted")
+        this.$router.push.get(0)
+      } else {
+        // Show error message
+      }
+    }
   }
 };
 </script>

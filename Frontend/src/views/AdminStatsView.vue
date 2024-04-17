@@ -2,24 +2,10 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <h1 class="my-4">Admin's Dashboard</h1>
-          <div class="d-flex justify-content-between mb-4">
-            <div class="form-inline">
-              <input
-                class="form-control mr-2"
-                type="text"
-                placeholder="Search"
-              />
-              <button class="btn btn-outline-secondary">Filter</button>
-            </div>
-            <div>
-              <a href="#" class="btn btn-link">Home</a>
-              <a href="#" class="btn btn-link">Logout</a>
-            </div>
-          </div>
+          <h1 class="my-4">Dashboard</h1>
         </div>
       </div>
-      <div class="row">
+      <div class="row" >
         <div class="col-md-6">
           <div class="card mb-4">
             <div class="card-header">Total Users</div>
@@ -118,44 +104,45 @@
       };
     },
     mounted() {
-      // this.fetchAdminStats();
-			this.renderCharts()
+      this.fetchAdminStats();
+			// this.renderCharts()
     },
     methods: {
-      // async fetchAdminStats() {
-      //   try {
-      //     const response = await axios.get('/api/admin/stats', {
-      //       headers: {
-      //         Authorization: `Bearer ${this.jwtToken}`,
-      //       },
-      //     });
-      //     const adminData = response.data;
-      //     this.totalUsersData = adminData.totalUsers;
-      //     this.userActivityData = adminData.userActivity;
-      //     this.booksBySectionData = adminData.booksBySection;
-      //     this.topBooks = adminData.topBooks;
-      //     this.renderCharts();
-      //   } catch (error) {
-      //     console.error('Error fetching admin stats:', error);
-      //   }
-      // },
+      async fetchAdminStats() {
+        try {
+          const response = await fetch('http://localhost:5000/adminstats', {
+            headers: {
+              Authorization: `Bearer ${this.jwtToken}`,
+            },
+          });
+          const adminData = await response.json();
+          console.log(adminData)
+          // this.totalUsersData = adminData.totalUsers;
+          this.userActivityData = adminData.userActivity;
+          this.booksBySectionData = adminData.booksBySection;
+          this.topBooks = adminData.topBooks;
+          this.renderCharts();
+        } catch (error) {
+          console.error('Error fetching admin stats:', error);
+        }
+      },
       renderCharts() {
-        const totalUsersCtx = this.$refs.totalUsersChart.getContext('2d');
-        const totalUsersChart = new Chart(totalUsersCtx, {
-          type: 'line',
-          data: {
-            labels: this.totalUsersData.map(item => item.date),
-            datasets: [
-              {
-                label: 'Total Users',
-                data: this.totalUsersData.map(item => item.count),
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-              },
-            ],
-          },
-        });
+        // const totalUsersCtx = this.$refs.totalUsersChart.getContext('2d');
+        // const totalUsersChart = new Chart(totalUsersCtx, {
+        //   type: 'line',
+        //   data: {
+        //     labels: this.totalUsersData.map(item => item.date),
+        //     datasets: [
+        //       {
+        //         label: 'Total Users',
+        //         data: this.totalUsersData.map(item => item.count),
+        //         backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        //         borderColor: 'rgba(54, 162, 235, 1)',
+        //         borderWidth: 1,
+        //       },
+        //     ],
+        //   },
+        // });
   
         const userActivityCtx = this.$refs.userActivityChart.getContext('2d');
         const userActivityChart = new Chart(userActivityCtx, {

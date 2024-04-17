@@ -20,7 +20,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     number = db.Column(db.Integer, unique=True, nullable=False)
-    password = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(120))
     role = db.Column(db.String(50), nullable=False, default='User')
     books = db.relationship('Book', secondary='user_books', lazy='subquery',
                             backref=db.backref('users', lazy=True))
@@ -46,8 +46,8 @@ class Section(db.Model):
 
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'))
     date_requested = db.Column(
         db.Date, nullable=False, default=date.today)
     # Possible values: Pending, Approved, Completed, Revoked

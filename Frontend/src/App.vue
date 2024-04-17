@@ -16,6 +16,12 @@
           <li v-if="$store.state.token && $store.state.user.role === 'User'" class="nav-item">
             <RouterLink to="/mybooks" class="nav-link">My Books</RouterLink>
           </li>
+          <li v-if="$store.state.token && $store.state.user.role === 'Admin'" class="d-flex">
+            <RouterLink to="/admin/requests" class="nav-link">Requests</RouterLink>
+            <RouterLink to="/admin/stats" class="nav-link">Stats</RouterLink>
+            <RouterLink to="/admin/section/new" class="nav-link">Add Section</RouterLink>
+            <RouterLink to="/admin/book/new" class="nav-link">Add Book</RouterLink>
+          </li>
         </ul>
 
         <div class="d-flex">

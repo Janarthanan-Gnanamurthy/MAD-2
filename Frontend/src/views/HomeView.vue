@@ -1,8 +1,8 @@
 <template>
-  <div class="container my-5">
+  <div class="container-fluid my-5">
     <div class="row">
       <!-- Section List -->
-      <div class="col-md-3 mb-4">
+      <div class="col-lg-3 mb-4">
         <div class="card">
           <div class="card-header">
             <h3 class="mb-0">Sections</h3>
@@ -18,14 +18,14 @@
             >
               <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">{{ section.name }}</h5>
-                <span class="badge badge-primary badge-pill">{{ section.books.length }}</span>
+                <span class="badge bg-secondary">{{ section.books.length }}</span>
               </div>
             </a>
           </div>
         </div>
       </div>
       <!-- Book List -->
-      <div class="col-md-9">
+      <div class="col-lg-9">
         <div class="row">
           <div
             v-for="section in sections"
@@ -33,18 +33,18 @@
             class="col-md-12 mb-4"
             v-show="section.isActive"
           >
-            <h4 class="mb-3">{{ section.name }}</h4>
+            <h4 class="mb-3">Books in {{ section.name }}</h4>
             <p>{{ section.description }}</p>
-            <div class="row">
+            <div class="row gx-4">
               <div
                 v-for="book in section.books"
                 :key="book.id"
                 class="col-md-4 mb-4"
               >
-                <div class="card h-100">
+                <div class="card h-48 border-0 shadow-sm">
                   <img
                     :src="'http://localhost:5000/uploads/books/' + book.image_filename"
-                    class="card-img-top"
+                    class="card-img-top rounded"
                     alt="Book Cover"
                   />
                   <div class="card-body">
@@ -81,10 +81,10 @@
       </div>
     </div>
   </div>
- </template>
- 
- <script>
- export default {
+</template>
+
+<script>
+export default {
   data() {
     return {
       sections: [],
@@ -102,7 +102,6 @@
       });
       if (response.ok) {
         let data = await response.json();
-        console.log(data);
         this.sections = data.sections.map(section => ({
           ...section,
           isActive: false
@@ -110,7 +109,6 @@
         this.sections[0].isActive = true; // Show the first section by default
         this.borrowedBooks = data.userBooks;
       } else {
-        // Check if the error is "unauthorized"
         if (response.status === 401) {
           this.$store.dispatch('logout');
           alert("Login required");
@@ -138,9 +136,7 @@
           },
           body: JSON.stringify(data),
         });
- 
         const responseData = await response.json();
- 
         if (response.ok) {
           alert(responseData.message);
         } else {
@@ -160,7 +156,6 @@
       if (response.ok) {
         alert("Book returned Successfully");
         data = await response.json();
-        console.log(data.message);
         this.$router.go(0);
       }
     },
@@ -169,34 +164,15 @@
       section.isActive = true;
     }
   }
- };
- </script>
- 
- <style>
- .card {
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
- }
- 
- .card-header {
-  background-color: #f8f9fa;
- }
- 
- .list-group-item-action {
-  cursor: pointer;
- }
- 
- .list-group-item-action.active {
-  background-color: #007bff;
-  color: #fff;
- }
- 
- .card-img-top {
-  height: 200px;
+};
+</script>
+
+<style scoped>
+.card-header {
+  border-radius: 0;
+}
+.card-img-top {
   object-fit: cover;
- }
- 
- .btn-group > .btn {
-  margin-right: 0.5rem;
- }
- </style>
+  height: 250px;
+}
+</style>

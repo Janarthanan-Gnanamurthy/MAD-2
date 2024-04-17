@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Api
 from api import UserResource, SectionResource, BookResource, AdminRequestsResource, SearchAPI
-
+from sqlalchemy import func
 from models import db, User, Request, Book, UserBooks, Section
 
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
@@ -30,15 +30,6 @@ app.config['JWT_SECRET_KEY'] = 'jwt-secret'
 
 api = Api(app)
 CORS(app, origins=['http://localhost:5173/*'])
-
-# app.config.update(
-#     CELERYBEAT_SCHEDULE={
-#         'send_daily_reminder': {
-#             'task': 'tasks.send_daily_reminder',
-#             'schedule': crontab(hour=20, minute=10)
-#         }
-#     }
-# )
 
 
 db.init_app(app)
@@ -107,11 +98,11 @@ def login():
 def admin_login():
     response = request.json
     user = User.query.filter_by(username=response['username']).first()
-    if user.role == 'admin':
+    if user.role == 'Admin':
         if user and response['password'] == user.password:
             access_token = create_access_token(
                 identity={'id': user.id, 'username': user.username, 'email': user.email})
-            return {'access_token': access_token}, 200
+            return {'access_token': access_token, 'userData': {'id': user.id, 'username': user.username, 'email': user.email, 'role':user.role}}, 200
         else:
             return {'message': 'Wrong Username or Password'}, 404
     else:
@@ -294,10 +285,35 @@ def feedback(book_id):
 def uploaded_book_image(filename):
     return send_from_directory(os.path.join('uploads/books'), filename)
 
-@app.route('/useridentity', methods=["GET"])
-@jwt_required()
-def userid():
-    return get_jwt_identity()
+@app.route('/adminstats')
+def admin_stats():
+    # Total users data
+    # user_count_by_date = db.session.query(func.date(User.date_created), func.count(User.id)).group_by(func.date(User.date_created)).all()
+    # total_users_data = [{'date': str(date), 'count': count} for date, count in user_count_by_date]
+
+    # User activity data
+    user_activity_by_month = db.session.query(func.strftime('%m', User.last_visited), func.count(User.id)).group_by(func.strftime('%m', User.last_visited)).all()
+    month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    user_activity_data = [{'month': month_names[int(month) - 1], 'count': count} for month, count in user_activity_by_month]
+
+    # Books by section data
+    books_by_section = db.session.query(Section.name, func.count(Book.id)).join(Book).group_by(Section.name).all()
+    books_by_section_data = [{'section': name, 'count': count} for name, count in books_by_section]
+
+    # Top books data
+    top_books = db.session.query(Book.id, Book.name).order_by(Book.id).limit(10).all()
+    top_books_data = [{'id': id, 'title': title} for id, title in top_books]
+
+    # Combine all data into a single dictionary
+    data = {
+        # 'totalUsersData': total_users_data,
+        'userActivity': user_activity_data,
+        'booksBySection': books_by_section_data,
+        'topBooks': top_books_data
+    }
+
+    return jsonify(data)
+
 
 
 api.add_resource(UserResource, '/users', '/users/<int:user_id>')

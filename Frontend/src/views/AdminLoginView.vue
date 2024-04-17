@@ -56,17 +56,18 @@ export default {
 				if (response.status === 401 ){
 					alert('No Admin Previledges')
 				}
-				else if (!response.ok) {
-          alert('Login Failed')
-          throw new Error('Login failed');
-        }
+				else if (response.ok) {
+					const data = await response.json();
+					const token = data.access_token;
+					sessionStorage.setItem('jwt_token', token);
+					this.$store.commit('AUTH_SUCCESS', token);
+					this.$store.commit('USER_UPDATE', data.userData)
 
-        const data = await response.json();
-        const token = data.access_token;
-        sessionStorage.setItem('jwt_token', token);
-        this.$store.commit('AUTH_SUCCESS', token);
-
-				this.$router.push('/admin');
+					this.$router.push('/admin');
+        }else {
+					alert('Login Failed')
+        	throw new Error('Login failed');	
+				}
 			} catch (error) {
 				console.error('Login Error:', error.message);
 			}

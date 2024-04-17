@@ -10,11 +10,10 @@
         <li v-for="book in acquiredBooks" :key="book.id" class="list-group-item d-flex justify-content-between align-items-center">
           {{ book.name }}
           <div>
-            <button class="btn btn-primary mx-2" @click="$router.push(`/book/${book.id}`)" >Read</button>
-            <button class="btn btn-secondary mx-2" @click="openFeedbackModal(book.id)">Feedback</button>
-            <button class="btn btn-success" @click="returnBook(book.id)" >Return</button>
+            <button class="btn btn-primary mx-2" @click="$router.push(`/book/${book.id}`)" style="border-radius: 10px;">Read</button>
+            <button class="btn btn-secondary mx-2" @click="openFeedbackModal(book.id)" style="border-radius: 10px;">Feedback</button>
+            <button class="btn btn-success" @click="returnBook(book.id)" style="border-radius: 10px;">Return</button>
             <span class="mx-2">Return by {{ book.return_date }}</span>
-            <span v-if="isOverdue(book.return_date)" class="badge badge-danger">Overdue</span>
           </div>
         </li>
         <li v-if="acquiredBooks.length === 0" class="list-group-item">You have no books currently acquired.</li>
@@ -122,12 +121,6 @@ export default {
         console.log(data.message);
         this.isFeedbackModalOpen = false
       }
-    },
-    isOverdue(returnDate) {
-      const today = new Date();
-      const dueDate = new Date(returnDate);
-      dueDate.setDate(dueDate.getDate() + 7);
-      return today > dueDate;
     },
   },
 };
